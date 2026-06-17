@@ -13,15 +13,32 @@
     --font: 'Inter', system-ui, -apple-system, sans-serif;
   }
   body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
-  header { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
-  .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+  header { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); white-space: nowrap; }
   .logo span { color: var(--accent); }
-  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .header-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
   .search-wrap { position: relative; }
   .search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
-  #searchInput { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; padding: 7px 12px 7px 34px; width: 220px; outline: none; transition: border-color 0.2s; }
+  #searchInput { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; padding: 7px 12px 7px 34px; width: 220px; outline: none; transition: border-color 0.2s, width 0.2s; }
   #searchInput:focus { border-color: var(--accent); }
   #searchInput::placeholder { color: var(--text-muted); }
+  @media (max-width: 640px) {
+    header { flex-wrap: wrap; height: auto; padding: 10px 14px; gap: 8px 10px; }
+    .logo { font-size: 15px; order: 1; flex: 1; }
+    #loginHint { order: 2; }
+    .header-actions { order: 3; width: 100%; flex-wrap: wrap; }
+    .search-wrap { flex: 1 1 100%; min-width: 0; }
+    #searchInput { width: 100%; }
+    #adminControls.visible { flex: 1 1 100%; justify-content: flex-start; }
+    #adminControls.visible #editBtn,
+    #adminControls.visible .btn-primary { flex: 1; justify-content: center; }
+  }
+  @media (max-width: 480px) {
+    header .btn-primary span { display: none; }
+    header .btn-primary { padding: 8px 10px; }
+    #adminControls { gap: 6px; }
+    .btn { font-size: 12.5px; padding: 8px 12px; }
+  }
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.18s; text-decoration: none; }
   .btn-primary { background: var(--accent); color: #0a0a0a; }
   .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 0 16px var(--accent-glow); }
@@ -33,18 +50,40 @@
   #lockBtn:hover { color: var(--accent); }
   #loginHint { background: none; border: none; cursor: pointer; padding: 6px; color: var(--text-muted); border-radius: 6px; display: flex; align-items: center; transition: color 0.2s; }
   #loginHint:hover { color: var(--accent); }
-  main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
-  .section-title { font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 24px; }
+  main { max-width: 1360px; margin: 0 auto; padding: 32px 24px 80px; display: flex; gap: 28px; align-items: flex-start; }
+  .content { flex: 1; min-width: 0; }
+  .section-title { font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   #grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-  @media (max-width: 1100px) { #grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 760px)  { #grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 1300px) { #grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 900px)  { #grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 480px)  { #grid { grid-template-columns: 1fr; } }
+
+  /* Category filter — left sidebar on desktop */
+  #catSidebar { flex: 0 0 200px; position: sticky; top: 76px; max-height: calc(100vh - 96px); overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
+  #catSidebar::-webkit-scrollbar { width: 5px; }
+  #catSidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .cat-pill { background: var(--surface2); border: 1.5px solid var(--accent); color: var(--text); font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 100px; cursor: pointer; text-align: center; white-space: nowrap; transition: background 0.15s, box-shadow 0.15s, transform 0.1s; }
+  .cat-pill:hover { box-shadow: 0 0 10px var(--accent-glow); }
+  .cat-pill:active { transform: scale(0.97); }
+  .cat-pill.active { background: var(--accent); color: #0a0a0a; border-color: var(--accent); box-shadow: 0 0 14px var(--accent-glow); }
+
+  /* Mobile: horizontal scroll chip bar instead of sidebar */
+  .cat-mobile-bar { display: none; }
+  @media (max-width: 760px) {
+    main { flex-direction: column; padding: 24px 16px 60px; gap: 16px; }
+    .content { width: 100%; min-width: 0; }
+    #catSidebar { display: none; }
+    .cat-mobile-bar { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; margin: 0 -16px; padding-left: 16px; padding-right: 16px; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 100vw; }
+    .cat-mobile-bar::-webkit-scrollbar { display: none; }
+    .cat-mobile-bar .cat-pill { flex: 0 0 auto; padding: 8px 14px; font-size: 12.5px; }
+  }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; position: relative; }
   .card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px var(--accent); border-color: var(--accent); }
   .card-img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--surface2); display: block; }
   .card-img-placeholder { width: 100%; aspect-ratio: 1; background: var(--surface2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; }
   .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
   .card-name { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text); word-break: break-word; }
+  .card-cat { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; }
   .card-price { font-size: 17px; font-weight: 700; color: #9caeff; letter-spacing: -0.01em; }
   .card-btn { display: block; width: 100%; padding: 9px 0; background: var(--accent); color: #0a0a0a; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none; transition: background 0.18s, box-shadow 0.18s; letter-spacing: 0.01em; }
   .card-btn:hover { background: var(--accent-hover); box-shadow: 0 0 14px var(--accent-glow); }
@@ -66,6 +105,8 @@
   .field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; font-family: var(--font); padding: 10px 13px; outline: none; transition: border-color 0.2s; }
   .field input:focus { border-color: var(--accent); }
   .field input::placeholder { color: var(--text-muted); }
+  .field select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; font-family: var(--font); padding: 10px 13px; outline: none; transition: border-color 0.2s; appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23888' stroke-width='2' viewBox='0 0 24 24'><path d='m6 9 6 6 6-6'/></svg>"); background-repeat: no-repeat; background-position: right 13px center; }
+  .field select:focus { border-color: var(--accent); }
   .upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
   .upload-area:hover, .upload-area.drag { border-color: var(--accent); background: rgba(156,174,255,0.06); }
   .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -98,9 +139,9 @@
     </div>
     <div id="adminControls">
       <button class="btn btn-ghost" id="editBtn" onclick="toggleEditMode()">Edit</button>
-      <button class="btn btn-primary" onclick="openModal()">
+      <button class="btn btn-primary" onclick="openModal()" title="Add product">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-        Add product
+        <span>Add product</span>
       </button>
       <button id="lockBtn" onclick="lockAdmin()" title="Lock admin">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -112,8 +153,14 @@
   </div>
 </header>
 <main>
-  <div class="section-title">All products <span id="countLabel"></span></div>
-  <div id="grid"><div id="empty"><strong>No products yet</strong><p>Ask the admin to add products.</p></div></div>
+  <nav id="catSidebar"></nav>
+  <div class="content">
+    <div class="cat-mobile-bar" id="catMobileBar"></div>
+    <div class="section-title">
+      <span id="sectionLabel">All products</span> <span id="countLabel"></span>
+    </div>
+    <div id="grid"><div id="empty"><strong>No products yet</strong><p>Ask the admin to add products.</p></div></div>
+  </div>
 </main>
 
 <!-- Add Product Modal -->
@@ -135,6 +182,7 @@
       <div id="previewWrap"><img id="previewImg" src="" alt="preview"></div>
     </div>
     <div class="field"><label>Product name</label><input type="text" id="prodName" placeholder="e.g. Moncler Hoodie (39 Colorways)"></div>
+    <div class="field"><label>Category</label><select id="prodCategory"></select></div>
     <div class="field"><label>Price <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label><input type="text" id="prodDesc" placeholder="e.g. 43.79$"></div>
     <div class="field"><label>Button label</label><input type="text" id="prodBtnLabel" placeholder="BUY ON OOPBUY"></div>
     <div class="field"><label>Button link</label><input type="url" id="prodLink" placeholder="https://&hellip;"></div>
@@ -165,7 +213,9 @@
   const SUPABASE_URL = 'https://dgkxehuffqqdcewlcqgt.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_ol0jPCPCkojB_KvkZT-HTA_xXpKW3JJ';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const CATEGORIES = ["Accessories","Backpacks","Bags","Balaclava","Basketball","Beanie","Belt","Bestseller","Books","Boots","Boxers","Boxes","Bracelet","Budget","Cap","Cardholder","Down Jacket","Electronics","Food","Football","Glasses","Gym","Headwear","Hoodie","Jacket","Jeans","Jersey","Jewerly","Keychain","Kids","Lego","Longsleeve","Mask","Misc","Necklace","Pants","Perfume","Phone Case","Ring","Room Decor","Scarf","Shirt","Shoes","Shorts","Slippers","Socks","Sweater","T-Shirt","Tank Top","Tie","Toys","Tracksuits","Underwear","Vest","Wallets","Watches","Woman","Zip"];
   let editMode = false, imageDataURL = null;
+  let activeCategory = '';
   let isAdmin = false;
   let cachedProducts = [];
 
@@ -173,7 +223,43 @@
     const { data } = await sb.auth.getSession();
     isAdmin = !!data.session;
     applyAdminState();
+    buildCategoryUI();
+    populateCategorySelect();
     await reload();
+  }
+
+  function buildCategoryUI() {
+    const all = ['', ...CATEGORIES];
+    const makePill = function(cat) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cat-pill' + (cat === activeCategory ? ' active' : '');
+      btn.textContent = cat || 'All';
+      btn.onclick = function(){ setCategory(cat); };
+      return btn;
+    };
+    const sidebar = document.getElementById('catSidebar');
+    const mobileBar = document.getElementById('catMobileBar');
+    sidebar.innerHTML = ''; mobileBar.innerHTML = '';
+    all.forEach(function(cat){
+      sidebar.appendChild(makePill(cat));
+      mobileBar.appendChild(makePill(cat));
+    });
+  }
+
+  function populateCategorySelect() {
+    const sel = document.getElementById('prodCategory');
+    sel.innerHTML = '<option value="">No category</option>' + CATEGORIES.map(function(c){ return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+  }
+
+  function setCategory(cat) {
+    activeCategory = cat;
+    document.querySelectorAll('.cat-pill').forEach(function(btn){
+      btn.classList.toggle('active', btn.textContent === (cat || 'All'));
+    });
+    document.getElementById('sectionLabel').textContent = cat ? cat : 'All products';
+    render(document.getElementById('searchInput').value);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function applyAdminState() {
@@ -222,7 +308,7 @@
     const { data, error } = await sb.from('products').select('*').order('created_at', { ascending: true });
     if (error) { console.error(error); toast('Could not load products.'); return []; }
     return data.map(function(row) {
-      return { id: row.id, name: row.name, desc: row.desc, btnLabel: row.btn_label, link: row.link, image: row.image };
+      return { id: row.id, name: row.name, desc: row.desc, btnLabel: row.btn_label, link: row.link, image: row.image, category: row.category };
     });
   }
 
@@ -235,21 +321,23 @@
     filter = filter || '';
     const grid = document.getElementById('grid');
     const q = filter.toLowerCase().trim();
-    const filtered = q ? cachedProducts.filter(p => p.name.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q)) : cachedProducts;
+    let filtered = activeCategory ? cachedProducts.filter(p => p.category === activeCategory) : cachedProducts;
+    filtered = q ? filtered.filter(p => p.name.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q)) : filtered;
     document.getElementById('countLabel').textContent = filtered.length ? '(' + filtered.length + ')' : '';
     grid.innerHTML = '';
     if (!filtered.length) {
       const el = document.createElement('div'); el.id = 'empty';
-      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<strong>No products yet</strong><p>Ask the admin to add products.</p>';
+      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<strong>No products yet</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Ask the admin to add products.') + '</p>';
       grid.appendChild(el); return;
     }
     filtered.forEach(function(p) {
       const card = document.createElement('div');
       card.className = 'card'; card.dataset.id = p.id;
       const imgHTML = p.image ? '<img class="card-img" src="' + p.image + '" alt="' + esc(p.name) + '" loading="lazy">' : '<div class="card-img-placeholder">No image</div>';
+      const catHTML = p.category ? '<div class="card-cat">' + esc(p.category) + '</div>' : '';
       const priceHTML = p.desc ? '<div class="card-price">' + esc(p.desc) + '</div>' : '';
       const delBtn = isAdmin ? '<button class="card-delete" onclick="deleteProduct(&quot;' + p.id + '&quot;)" title="Remove">&times;</button>' : '';
-      card.innerHTML = imgHTML + '<div class="card-body"><div class="card-name">' + esc(p.name) + '</div>' + priceHTML + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.btnLabel || 'BUY ON OOPBUY') + '</a></div>' + delBtn;
+      card.innerHTML = imgHTML + '<div class="card-body">' + catHTML + '<div class="card-name">' + esc(p.name) + '</div>' + priceHTML + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.btnLabel || 'BUY ON OOPBUY') + '</a></div>' + delBtn;
       grid.appendChild(card);
     });
     if (editMode) grid.classList.add('edit-mode');
@@ -259,13 +347,14 @@
 
   async function saveProduct() {
     const name = document.getElementById('prodName').value.trim();
+    const category = document.getElementById('prodCategory').value;
     const desc = document.getElementById('prodDesc').value.trim();
     const btnLabel = document.getElementById('prodBtnLabel').value.trim() || 'BUY ON OOPBUY';
     const link = document.getElementById('prodLink').value.trim();
     if (!name) { toast('Please enter a product name.'); return; }
     if (!link)  { toast('Please enter a button link.'); return; }
     const { error } = await sb.from('products').insert({
-      id: Date.now().toString(), name: name, desc: desc, btn_label: btnLabel, link: link, image: imageDataURL
+      id: Date.now().toString(), name: name, category: category, desc: desc, btn_label: btnLabel, link: link, image: imageDataURL
     });
     if (error) { console.error(error); toast('Could not save product.'); return; }
     await reload(document.getElementById('searchInput').value); closeModal(); toast('Product added!');
@@ -292,6 +381,7 @@
     document.getElementById('overlay').classList.add('open');
     imageDataURL = null;
     ['imgFile','prodName','prodDesc','prodBtnLabel','prodLink','imgUrl'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('prodCategory').value = '';
     document.getElementById('previewWrap').style.display = 'none';
     switchImgTab('upload');
   }
