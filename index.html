@@ -184,7 +184,7 @@
     <div class="field"><label>Product name</label><input type="text" id="prodName" placeholder="e.g. Moncler Hoodie (39 Colorways)"></div>
     <div class="field"><label>Category</label><select id="prodCategory"></select></div>
     <div class="field"><label>Price <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label><input type="text" id="prodDesc" placeholder="e.g. 43.79$"></div>
-    <div class="field"><label>Button label</label><input type="text" id="prodBtnLabel" placeholder="BUY ON KAKOBUY"></div>
+    <div class="field"><label>Button label</label><input type="text" id="prodBtnLabel" placeholder="BUY ON OOPBUY"></div>
     <div class="field"><label>Button link</label><input type="url" id="prodLink" placeholder="https://&hellip;"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
@@ -337,7 +337,7 @@
       const catHTML = p.category ? '<div class="card-cat">' + esc(p.category) + '</div>' : '';
       const priceHTML = p.desc ? '<div class="card-price">' + esc(p.desc) + '</div>' : '';
       const delBtn = isAdmin ? '<button class="card-delete" onclick="deleteProduct(&quot;' + p.id + '&quot;)" title="Remove">&times;</button>' : '';
-      card.innerHTML = imgHTML + '<div class="card-body">' + catHTML + '<div class="card-name">' + esc(p.name) + '</div>' + priceHTML + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.btnLabel || 'BUY ON KAKOBUY') + '</a></div>' + delBtn;
+      card.innerHTML = imgHTML + '<div class="card-body">' + catHTML + '<div class="card-name">' + esc(p.name) + '</div>' + priceHTML + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.btnLabel || 'BUY ON OOPBUY') + '</a></div>' + delBtn;
       grid.appendChild(card);
     });
     if (editMode) grid.classList.add('edit-mode');
@@ -349,7 +349,7 @@
     const name = document.getElementById('prodName').value.trim();
     const category = document.getElementById('prodCategory').value;
     const desc = document.getElementById('prodDesc').value.trim();
-    const btnLabel = document.getElementById('prodBtnLabel').value.trim() || 'BUY ON KAKOBUY';
+    const btnLabel = document.getElementById('prodBtnLabel').value.trim() || 'BUY ON OOPBUY';
     const link = document.getElementById('prodLink').value.trim();
     if (!name) { toast('Please enter a product name.'); return; }
     if (!link)  { toast('Please enter a button link.'); return; }
