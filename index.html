@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>w84me's spreadsheet</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0a; --surface: #111111; --surface2: #1a1a1a; --border: #2a2a2a;
+    --accent: #9caeff; --accent-hover: #7b8fff; --accent-glow: rgba(156,174,255,0.3);
+    --text: #f0f0f0; --text-muted: #888; --radius: 14px;
+    --font: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+  header { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .search-wrap { position: relative; }
+  .search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+  #searchInput { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; padding: 7px 12px 7px 34px; width: 220px; outline: none; transition: border-color 0.2s; }
+  #searchInput:focus { border-color: var(--accent); }
+  #searchInput::placeholder { color: var(--text-muted); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.18s; text-decoration: none; }
+  .btn-primary { background: var(--accent); color: #0a0a0a; }
+  .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 0 16px var(--accent-glow); }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: #555; }
+  #adminControls { display: none; gap: 10px; align-items: center; }
+  #adminControls.visible { display: flex; }
+  #lockBtn { background: none; border: none; cursor: pointer; padding: 6px; color: var(--text-muted); border-radius: 6px; transition: color 0.2s; display: flex; align-items: center; }
+  #lockBtn:hover { color: var(--accent); }
+  #loginHint { background: none; border: none; cursor: pointer; padding: 6px; color: var(--text-muted); border-radius: 6px; display: flex; align-items: center; transition: color 0.2s; }
+  #loginHint:hover { color: var(--accent); }
+  main { max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
+  .section-title { font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 24px; }
+  #grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  @media (max-width: 1100px) { #grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 760px)  { #grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px)  { #grid { grid-template-columns: 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; position: relative; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px var(--accent); border-color: var(--accent); }
+  .card-img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--surface2); display: block; }
+  .card-img-placeholder { width: 100%; aspect-ratio: 1; background: var(--surface2); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; }
+  .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .card-name { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text); word-break: break-word; }
+  .card-price { font-size: 17px; font-weight: 700; color: #9caeff; letter-spacing: -0.01em; }
+  .card-btn { display: block; width: 100%; padding: 9px 0; background: var(--accent); color: #0a0a0a; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none; transition: background 0.18s, box-shadow 0.18s; letter-spacing: 0.01em; }
+  .card-btn:hover { background: var(--accent-hover); box-shadow: 0 0 14px var(--accent-glow); }
+  .card-delete { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; background: rgba(0,0,0,0.7); border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 14px; transition: color 0.15s, border-color 0.15s; }
+  .card-delete:hover { color: #ef4444; border-color: #ef4444; }
+  .edit-mode .card-delete { display: flex; }
+  #empty { grid-column: 1/-1; text-align: center; padding: 80px 0; color: var(--text-muted); }
+  #empty p { font-size: 15px; margin-top: 8px; }
+  #empty strong { display: block; font-size: 18px; color: var(--text); margin-bottom: 6px; }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 480px; padding: 32px; position: relative; animation: slideUp 0.22s ease; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 24px; letter-spacing: -0.02em; }
+  .modal-close { position: absolute; top: 18px; right: 18px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: color 0.15s; }
+  .modal-close:hover { color: var(--text); }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; }
+  .field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; font-family: var(--font); padding: 10px 13px; outline: none; transition: border-color 0.2s; }
+  .field input:focus { border-color: var(--accent); }
+  .field input::placeholder { color: var(--text-muted); }
+  .upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
+  .upload-area:hover, .upload-area.drag { border-color: var(--accent); background: rgba(156,174,255,0.06); }
+  .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-area-text { font-size: 13px; color: var(--text-muted); pointer-events: none; }
+  .upload-area-text strong { display: block; color: var(--text); margin-bottom: 3px; font-size: 14px; }
+  .img-tabs { display: flex; gap: 6px; margin-bottom: 8px; }
+  .img-tab { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); font-size: 12px; font-weight: 600; padding: 7px 0; border-radius: 7px; cursor: pointer; transition: all 0.15s; }
+  .img-tab.active { background: var(--accent); color: #0a0a0a; border-color: var(--accent); }
+  .img-tab:not(.active):hover { color: var(--text); border-color: #555; }
+  #previewWrap { display: none; margin-top: 12px; }
+  #previewWrap img { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
+  .modal-actions .btn { flex: 1; justify-content: center; padding: 11px 0; font-size: 14px; }
+  #loginError { color: #ef4444; font-size: 13px; margin-bottom: 12px; display: none; }
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity 0.25s, transform 0.25s; z-index: 300; white-space: nowrap; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #editBanner { display: none; background: rgba(156,174,255,0.1); border-bottom: 1px solid rgba(156,174,255,0.25); padding: 10px 24px; font-size: 13px; color: var(--accent); text-align: center; font-weight: 500; }
+  #editBanner.visible { display: block; }
+</style>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="editBanner">&#9999;&#65039; Edit mode &mdash; click &times; on any card to remove it. Click &ldquo;Done&rdquo; when finished.</div>
+<header>
+  <div class="logo">w84me&rsquo;s spreadsheet</div>
+  <div class="header-actions">
+    <div class="search-wrap">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="searchInput" type="text" placeholder="Search products&hellip;">
+    </div>
+    <div id="adminControls">
+      <button class="btn btn-ghost" id="editBtn" onclick="toggleEditMode()">Edit</button>
+      <button class="btn btn-primary" onclick="openModal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Add product
+      </button>
+      <button id="lockBtn" onclick="lockAdmin()" title="Lock admin">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </button>
+    </div>
+    <button id="loginHint" onclick="openLogin()" title="Admin login">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </button>
+  </div>
+</header>
+<main>
+  <div class="section-title">All products <span id="countLabel"></span></div>
+  <div id="grid"><div id="empty"><strong>No products yet</strong><p>Ask the admin to add products.</p></div></div>
+</main>
+
+<!-- Add Product Modal -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-title">Add new product</div>
+    <div class="field">
+      <label>Product image</label>
+      <div class="img-tabs">
+        <button type="button" class="img-tab active" id="tabUpload" onclick="switchImgTab('upload')">Upload</button>
+        <button type="button" class="img-tab" id="tabLink" onclick="switchImgTab('link')">Image link</button>
+      </div>
+      <div class="upload-area" id="uploadArea" tabindex="0">
+        <input type="file" id="imgFile" accept="image/*" onchange="handleFile(event)">
+        <div class="upload-area-text"><strong>Click to upload</strong>drag &amp; drop, or paste (Ctrl+V) &mdash; PNG, JPG, WEBP</div>
+      </div>
+      <input type="url" id="imgUrl" placeholder="https://example.com/image.jpg" style="display:none;" oninput="handleImgUrl(event)">
+      <div id="previewWrap"><img id="previewImg" src="" alt="preview"></div>
+    </div>
+    <div class="field"><label>Product name</label><input type="text" id="prodName" placeholder="e.g. Moncler Hoodie (39 Colorways)"></div>
+    <div class="field"><label>Price <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label><input type="text" id="prodDesc" placeholder="e.g. 43.79$"></div>
+    <div class="field"><label>Button label</label><input type="text" id="prodBtnLabel" placeholder="BUY ON OOPBUY"></div>
+    <div class="field"><label>Button link</label><input type="url" id="prodLink" placeholder="https://&hellip;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Add product</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="overlay" id="loginOverlay" onclick="handleLoginOverlayClick(event)">
+  <div class="modal" style="max-width:360px;">
+    <button class="modal-close" onclick="closeLogin()">&times;</button>
+    <div class="modal-title">Admin login</div>
+    <div class="field"><label>Email</label><input type="email" id="emailInput" placeholder="you@example.com"></div>
+    <div class="field"><label>Password</label><input type="password" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkLogin()"></div>
+    <p id="loginError">Wrong email or password.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeLogin()">Cancel</button>
+      <button class="btn btn-primary" onclick="checkLogin()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script>
+  const SUPABASE_URL = 'https://dgkxehuffqqdcewlcqgt.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_ol0jPCPCkojB_KvkZT-HTA_xXpKW3JJ';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let editMode = false, imageDataURL = null;
+  let isAdmin = false;
+  let cachedProducts = [];
+
+  async function init() {
+    const { data } = await sb.auth.getSession();
+    isAdmin = !!data.session;
+    applyAdminState();
+    await reload();
+  }
+
+  function applyAdminState() {
+    document.getElementById('adminControls').classList.toggle('visible', isAdmin);
+    document.getElementById('loginHint').style.display = isAdmin ? 'none' : 'flex';
+  }
+
+  async function checkLogin() {
+    const email = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('pwInput').value;
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (!error && data.session) {
+      isAdmin = true;
+      closeLogin();
+      applyAdminState();
+      await render();
+      toast('Welcome back, admin.');
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('pwInput').value = '';
+      document.getElementById('pwInput').focus();
+    }
+  }
+
+  async function lockAdmin() {
+    await sb.auth.signOut();
+    isAdmin = false;
+    editMode = false;
+    document.getElementById('grid').classList.remove('edit-mode');
+    document.getElementById('editBanner').classList.remove('visible');
+    applyAdminState();
+    render();
+    toast('Locked.');
+  }
+
+  function openLogin() {
+    document.getElementById('loginOverlay').classList.add('open');
+    document.getElementById('pwInput').value = '';
+    document.getElementById('loginError').style.display = 'none';
+    setTimeout(() => document.getElementById('pwInput').focus(), 80);
+  }
+  function closeLogin() { document.getElementById('loginOverlay').classList.remove('open'); }
+  function handleLoginOverlayClick(e) { if (e.target === e.currentTarget) closeLogin(); }
+
+  async function load() {
+    const { data, error } = await sb.from('products').select('*').order('created_at', { ascending: true });
+    if (error) { console.error(error); toast('Could not load products.'); return []; }
+    return data.map(function(row) {
+      return { id: row.id, name: row.name, desc: row.desc, btnLabel: row.btn_label, link: row.link, image: row.image };
+    });
+  }
+
+  async function reload(filter) {
+    cachedProducts = await load();
+    render(filter);
+  }
+
+  function render(filter) {
+    filter = filter || '';
+    const grid = document.getElementById('grid');
+    const q = filter.toLowerCase().trim();
+    const filtered = q ? cachedProducts.filter(p => p.name.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q)) : cachedProducts;
+    document.getElementById('countLabel').textContent = filtered.length ? '(' + filtered.length + ')' : '';
+    grid.innerHTML = '';
+    if (!filtered.length) {
+      const el = document.createElement('div'); el.id = 'empty';
+      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<strong>No products yet</strong><p>Ask the admin to add products.</p>';
+      grid.appendChild(el); return;
+    }
+    filtered.forEach(function(p) {
+      const card = document.createElement('div');
+      card.className = 'card'; card.dataset.id = p.id;
+      const imgHTML = p.image ? '<img class="card-img" src="' + p.image + '" alt="' + esc(p.name) + '" loading="lazy">' : '<div class="card-img-placeholder">No image</div>';
+      const priceHTML = p.desc ? '<div class="card-price">' + esc(p.desc) + '</div>' : '';
+      const delBtn = isAdmin ? '<button class="card-delete" onclick="deleteProduct(&quot;' + p.id + '&quot;)" title="Remove">&times;</button>' : '';
+      card.innerHTML = imgHTML + '<div class="card-body"><div class="card-name">' + esc(p.name) + '</div>' + priceHTML + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.btnLabel || 'BUY ON OOPBUY') + '</a></div>' + delBtn;
+      grid.appendChild(card);
+    });
+    if (editMode) grid.classList.add('edit-mode');
+  }
+
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  async function saveProduct() {
+    const name = document.getElementById('prodName').value.trim();
+    const desc = document.getElementById('prodDesc').value.trim();
+    const btnLabel = document.getElementById('prodBtnLabel').value.trim() || 'BUY ON OOPBUY';
+    const link = document.getElementById('prodLink').value.trim();
+    if (!name) { toast('Please enter a product name.'); return; }
+    if (!link)  { toast('Please enter a button link.'); return; }
+    const { error } = await sb.from('products').insert({
+      id: Date.now().toString(), name: name, desc: desc, btn_label: btnLabel, link: link, image: imageDataURL
+    });
+    if (error) { console.error(error); toast('Could not save product.'); return; }
+    await reload(document.getElementById('searchInput').value); closeModal(); toast('Product added!');
+  }
+
+  async function deleteProduct(id) {
+    if (!isAdmin) return;
+    const { error } = await sb.from('products').delete().eq('id', id);
+    if (error) { console.error(error); toast('Could not remove product.'); return; }
+    await reload(document.getElementById('searchInput').value);
+    toast('Product removed.');
+  }
+
+  function toggleEditMode() {
+    if (!isAdmin) return;
+    editMode = !editMode;
+    document.getElementById('grid').classList.toggle('edit-mode', editMode);
+    document.getElementById('editBtn').textContent = editMode ? 'Done' : 'Edit';
+    document.getElementById('editBanner').classList.toggle('visible', editMode);
+  }
+
+  function openModal() {
+    if (!isAdmin) return;
+    document.getElementById('overlay').classList.add('open');
+    imageDataURL = null;
+    ['imgFile','prodName','prodDesc','prodBtnLabel','prodLink','imgUrl'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('previewWrap').style.display = 'none';
+    switchImgTab('upload');
+  }
+  function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+  function handleOverlayClick(e) { if (e.target === e.currentTarget) closeModal(); }
+
+  function switchImgTab(tab) {
+    const isUpload = tab === 'upload';
+    document.getElementById('tabUpload').classList.toggle('active', isUpload);
+    document.getElementById('tabLink').classList.toggle('active', !isUpload);
+    document.getElementById('uploadArea').style.display = isUpload ? 'block' : 'none';
+    document.getElementById('imgUrl').style.display = isUpload ? 'none' : 'block';
+    imageDataURL = null;
+    document.getElementById('imgUrl').value = '';
+    document.getElementById('imgFile').value = '';
+    document.getElementById('previewWrap').style.display = 'none';
+  }
+
+  function handleImgUrl(e) {
+    const url = e.target.value.trim();
+    if (url) {
+      imageDataURL = url;
+      document.getElementById('previewImg').src = url;
+      document.getElementById('previewWrap').style.display = 'block';
+    } else {
+      imageDataURL = null;
+      document.getElementById('previewWrap').style.display = 'none';
+    }
+  }
+
+  function handleFile(e) {
+    readImageFile(e.target.files[0]);
+  }
+
+  function readImageFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    var r = new FileReader();
+    r.onload = function(ev){ imageDataURL = ev.target.result; document.getElementById('previewImg').src = imageDataURL; document.getElementById('previewWrap').style.display = 'block'; };
+    r.readAsDataURL(file);
+  }
+
+  var ua = document.getElementById('uploadArea');
+  ua.addEventListener('dragover', function(e){ e.preventDefault(); ua.classList.add('drag'); });
+  ua.addEventListener('dragleave', function(){ ua.classList.remove('drag'); });
+  ua.addEventListener('drop', function(e){
+    e.preventDefault(); ua.classList.remove('drag');
+    readImageFile(e.dataTransfer.files[0]);
+  });
+
+  document.addEventListener('paste', function(e){
+    var overlayOpen = document.getElementById('overlay').classList.contains('open');
+    var onUploadTab = document.getElementById('uploadArea').style.display !== 'none';
+    if (!overlayOpen || !onUploadTab) return;
+    var items = (e.clipboardData || window.clipboardData).items;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') === 0) {
+        e.preventDefault();
+        readImageFile(items[i].getAsFile());
+        toast('Image pasted!');
+        break;
+      }
+    }
+  });
+
+  document.getElementById('searchInput').addEventListener('input', function(e){ render(e.target.value); });
+
+  var toastTimer;
+  function toast(msg) {
+    var el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2500);
+  }
+
+  init();
+</script>
+</body>
+</html>
