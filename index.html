@@ -70,7 +70,6 @@
   .content { flex: 1; min-width: 0; }
   .section-title { font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
-  /* Sort bar */
   .sort-bar { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
   .sort-pill { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); font-size: 12px; font-weight: 600; padding: 6px 13px; border-radius: 100px; cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s; white-space: nowrap; }
   .sort-pill:hover { color: var(--text); border-color: #555; }
@@ -81,7 +80,6 @@
   @media (max-width: 900px)  { #grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 480px)  { #grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
 
-  /* Category filter — left sidebar on desktop */
   #catSidebar { flex: 0 0 200px; position: sticky; top: 76px; max-height: calc(100vh - 96px); overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; }
   #catSidebar::-webkit-scrollbar { width: 5px; }
   #catSidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -90,7 +88,6 @@
   .cat-pill:active { transform: scale(0.97); }
   .cat-pill.active { background: var(--accent); color: #0a0a0a; border-color: var(--accent); box-shadow: 0 0 14px var(--accent-glow); }
 
-  /* Mobile: horizontal scroll chip bar instead of sidebar */
   .cat-mobile-bar { display: none; }
   @media (max-width: 760px) {
     main { flex-direction: column; padding: 24px 16px 60px; gap: 16px; }
@@ -109,18 +106,20 @@
   .card-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
   .card-name { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text); word-break: break-word; }
   .card-cat { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; }
-  .card-price { font-size: 17px; font-weight: 700; color: #9caeff; letter-spacing: -0.01em; }
+  .card-price { font-size: 17px; font-weight: 700; color: var(--accent); letter-spacing: -0.01em; }
   .card-btn { display: block; width: 100%; padding: 9px 0; background: var(--accent); color: #0a0a0a; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none; transition: background 0.18s, box-shadow 0.18s; letter-spacing: 0.01em; }
   .card-btn:hover { background: var(--accent-hover); box-shadow: 0 0 14px var(--accent-glow); }
   .card-delete { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; background: rgba(0,0,0,0.7); border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 14px; transition: color 0.15s, border-color 0.15s; }
   .card-delete:hover { color: #ef4444; border-color: #ef4444; }
-  .edit-mode .card-delete { display: flex; }
+  .card-edit { position: absolute; top: 8px; left: 8px; width: 26px; height: 26px; background: rgba(0,0,0,0.7); border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); cursor: pointer; display: none; align-items: center; justify-content: center; transition: color 0.15s, border-color 0.15s; }
+  .card-edit:hover { color: var(--accent); border-color: var(--accent); }
+  .edit-mode .card-delete, .edit-mode .card-edit { display: flex; }
   #empty { grid-column: 1/-1; text-align: center; padding: 80px 0; color: var(--text-muted); }
   #empty p { font-size: 15px; margin-top: 8px; }
   #empty strong { display: block; font-size: 18px; color: var(--text); margin-bottom: 6px; }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
   .overlay.open { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 480px; padding: 32px; position: relative; animation: slideUp 0.22s ease; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; width: 100%; max-width: 480px; padding: 32px; position: relative; animation: slideUp 0.22s ease; max-height: 90vh; overflow-y: auto; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 24px; letter-spacing: -0.02em; }
   .modal-close { position: absolute; top: 18px; right: 18px; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: color 0.15s; }
@@ -150,6 +149,42 @@
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   #editBanner { display: none; background: rgba(156,174,255,0.1); border-bottom: 1px solid rgba(156,174,255,0.25); padding: 10px 24px; font-size: 13px; color: var(--accent); text-align: center; font-weight: 500; }
   #editBanner.visible { display: block; }
+
+  /* Link converter */
+  .converter-box {
+    background: rgba(167,139,250,0.07);
+    border: 1px solid rgba(167,139,250,0.25);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .converter-label {
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .converter-row { display: flex; gap: 8px; }
+  .converter-row input {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 13px;
+    font-family: var(--font); padding: 9px 12px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .converter-row input:focus { border-color: var(--accent); }
+  .converter-row input::placeholder { color: var(--text-muted); }
+  .converter-btn {
+    background: var(--accent); color: #0a0a0a; border: none;
+    border-radius: 8px; font-size: 12px; font-weight: 700;
+    padding: 9px 14px; cursor: pointer; white-space: nowrap;
+    transition: background 0.18s; flex-shrink: 0;
+  }
+  .converter-btn:hover { background: var(--accent-hover); }
+  .converter-status {
+    font-size: 12px; margin-top: 8px; min-height: 18px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .converter-status.ok { color: #4ade80; }
+  .converter-status.err { color: #f87171; }
 
   /* Welcome Popup */
   #welcomeOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); }
@@ -237,7 +272,6 @@
     <div class="section-title">
       <span id="sectionLabel">All products</span> <span id="countLabel"></span>
     </div>
-    <!-- Sort bar -->
     <div class="sort-bar" id="sortBar">
       <button class="sort-pill active" data-sort="newest" onclick="setSort('newest')">Newest</button>
       <button class="sort-pill" data-sort="oldest" onclick="setSort('oldest')">Oldest</button>
@@ -252,7 +286,21 @@
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">&times;</button>
-    <div class="modal-title">Add new product</div>
+    <div class="modal-title" id="modal-title-text">Add new product</div>
+
+    <!-- ✨ Link Converter -->
+    <div class="converter-box">
+      <div class="converter-label">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Auto-convert Taobao / Weidian / 1688 link
+      </div>
+      <div class="converter-row">
+        <input type="url" id="sourceLink" placeholder="Paste Taobao, Weidian or 1688 link here&hellip;" oninput="onSourceInput()">
+        <button class="converter-btn" onclick="convertLink()">Convert</button>
+      </div>
+      <div class="converter-status" id="converterStatus"></div>
+    </div>
+
     <div class="field">
       <label>Product image</label>
       <div class="img-tabs">
@@ -273,7 +321,7 @@
     <div class="field"><label>Button link</label><input type="url" id="prodLink" placeholder="https://&hellip;"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveProduct()">Add product</button>
+      <button class="btn btn-primary" id="modal-save-btn" onclick="editingId ? updateProduct() : saveProduct()">Add product</button>
     </div>
   </div>
 </div>
@@ -326,47 +374,100 @@
   const SUPABASE_URL = 'https://dgkxehuffqqdcewlcqgt.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_ol0jPCPCkojB_KvkZT-HTA_xXpKW3JJ';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const INVITE_CODE = 'LKQX68R44';
   const CATEGORIES = ["Accessories","Backpacks","Bags","Balaclava","Basketball","Beanie","Belt","Bestseller","Books","Boots","Boxers","Boxes","Bracelet","Budget","Cap","Cardholder","Down Jacket","Electronics","Food","Football","Glasses","Gym","Headwear","Hoodie","Jacket","Jeans","Jersey","Jewerly","Keychain","Kids","Lego","Longsleeve","Mask","Misc","Necklace","Pants","Perfume","Phone Case","Ring","Room Decor","Scarf","Shirt","Shoes","Shorts","Slippers","Socks","Sweater","T-Shirt","Tank Top","Tie","Toys","Tracksuits","Underwear","Vest","Wallets","Watches","Woman","Zip"];
-  let editMode = false, imageDataURL = null;
+  let editMode = false, imageDataURL = null, editingId = null;
   let activeCategory = '';
   let activeSort = 'newest';
   let isAdmin = false;
   let cachedProducts = [];
 
-  /* Extract a numeric price from a string like "43.79$" or "$12.50" */
+  /* ── Link converter ── */
+  function detectAndConvert(raw) {
+    raw = raw.trim();
+    try {
+      // Taobao: item.taobao.com/item.htm?...id=XXX
+      if (/taobao\.com/i.test(raw)) {
+        var u = new URL(raw);
+        var id = u.searchParams.get('id');
+        if (!id) return null;
+        // Clean URL to just the essential part
+        var cleanTaobao = 'https://item.taobao.com/item.htm?ft=t&id=' + id;
+        var encoded = encodeURIComponent(encodeURIComponent(cleanTaobao));
+        return {
+          oopbuyUrl: 'https://oopbuy.com/product/1/' + id + '?originKeywordUrl=' + encoded + '&goodsInviteCode=' + INVITE_CODE,
+          platform: 'Taobao',
+          itemId: id
+        };
+      }
+      // Weidian: weidian.com/item.html?itemID=XXX
+      if (/weidian\.com/i.test(raw)) {
+        var u = new URL(raw);
+        var itemID = u.searchParams.get('itemID');
+        if (!itemID) return null;
+        var cleanWeidian = 'https://weidian.com/item.html?itemID=' + itemID;
+        var encoded = encodeURIComponent(encodeURIComponent(cleanWeidian));
+        return {
+          oopbuyUrl: 'https://oopbuy.com/product/weidian/' + itemID + '?originKeywordUrl=' + encoded + '&goodsInviteCode=' + INVITE_CODE,
+          platform: 'Weidian',
+          itemId: itemID
+        };
+      }
+      // 1688: detail.1688.com/offer/XXX.html
+      if (/1688\.com/i.test(raw)) {
+        var match = raw.match(/\/offer\/(\d+)\.html/);
+        if (!match) return null;
+        var offerId = match[1];
+        // Keep original URL but encode it
+        var encoded = encodeURIComponent(encodeURIComponent(raw));
+        return {
+          oopbuyUrl: 'https://oopbuy.com/product/0/' + offerId + '?originKeywordUrl=' + encoded + '&goodsInviteCode=' + INVITE_CODE,
+          platform: '1688',
+          itemId: offerId
+        };
+      }
+    } catch(e) {}
+    return null;
+  }
+
+  function onSourceInput() {
+    var val = document.getElementById('sourceLink').value.trim();
+    var status = document.getElementById('converterStatus');
+    if (!val) { status.textContent = ''; status.className = 'converter-status'; return; }
+    var result = detectAndConvert(val);
+    if (result) {
+      status.innerHTML = '&#10003; Detected: ' + result.platform + ' — click Convert';
+      status.className = 'converter-status ok';
+    } else {
+      status.textContent = 'Paste a Taobao, Weidian, or 1688 product link';
+      status.className = 'converter-status err';
+    }
+  }
+
+  function convertLink() {
+    var raw = document.getElementById('sourceLink').value.trim();
+    var status = document.getElementById('converterStatus');
+    if (!raw) { toast('Paste a source link first.'); return; }
+    var result = detectAndConvert(raw);
+    if (!result) {
+      status.textContent = 'Could not parse link. Make sure it\'s a Taobao, Weidian, or 1688 product URL.';
+      status.className = 'converter-status err';
+      return;
+    }
+    document.getElementById('prodLink').value = result.oopbuyUrl;
+    if (!document.getElementById('prodBtnLabel').value.trim()) {
+      document.getElementById('prodBtnLabel').value = 'BUY ON OOPBUY';
+    }
+    status.innerHTML = '&#10003; Converted! OopBuy link filled in below.';
+    status.className = 'converter-status ok';
+    toast('Link converted ✓');
+  }
+
+  /* ── Price parser ── */
   function parsePrice(str) {
     if (!str) return null;
     var n = parseFloat(String(str).replace(/[^0-9.]/g, ''));
     return isNaN(n) ? null : n;
-  }
-
-  function sortProducts(arr) {
-    var copy = arr.slice();
-    if (activeSort === 'newest') {
-      return copy; /* already ordered by created_at asc from DB; reverse for newest-first */
-      /* Actually: DB returns ascending, so newest = reverse */
-    }
-    if (activeSort === 'newest') return copy.reverse();
-    if (activeSort === 'oldest') return copy;
-    if (activeSort === 'price-asc') {
-      return copy.sort(function(a, b) {
-        var pa = parsePrice(a.desc), pb = parsePrice(b.desc);
-        if (pa === null && pb === null) return 0;
-        if (pa === null) return 1;
-        if (pb === null) return -1;
-        return pa - pb;
-      });
-    }
-    if (activeSort === 'price-desc') {
-      return copy.sort(function(a, b) {
-        var pa = parsePrice(a.desc), pb = parsePrice(b.desc);
-        if (pa === null && pb === null) return 0;
-        if (pa === null) return 1;
-        if (pb === null) return -1;
-        return pb - pa;
-      });
-    }
-    return copy;
   }
 
   function setSort(sort) {
@@ -482,7 +583,6 @@
     let filtered = activeCategory ? cachedProducts.filter(p => p.category === activeCategory) : cachedProducts;
     filtered = q ? filtered.filter(p => p.name.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q)) : filtered;
 
-    /* Apply sort — for newest reverse the already-asc array; oldest keeps it; price sorts use parsePrice */
     if (activeSort === 'newest') {
       filtered = filtered.slice().reverse();
     } else if (activeSort === 'price-asc') {
@@ -502,7 +602,6 @@
         return pb - pa;
       });
     }
-    /* 'oldest' = natural DB order, no change needed */
 
     document.getElementById('countLabel').textContent = filtered.length ? '(' + filtered.length + ')' : '';
     grid.innerHTML = '';
@@ -518,7 +617,8 @@
       const catHTML = p.category ? '<div class="card-cat">' + esc(p.category) + '</div>' : '';
       const priceHTML = p.desc ? '<div class="card-price">' + esc(p.desc) + '</div>' : '';
       const delBtn = isAdmin ? '<button class="card-delete" onclick="deleteProduct(&quot;' + p.id + '&quot;)" title="Remove">&times;</button>' : '';
-      card.innerHTML = imgHTML + '<div class="card-body">' + catHTML + '<div class="card-name">' + esc(p.name) + '</div>' + priceHTML + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.btnLabel || 'BUY ON OOPBUY') + '</a></div>' + delBtn;
+      const editBtn = isAdmin ? '<button class="card-edit" onclick="openEditModal(&quot;' + p.id + '&quot;)" title="Edit"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' : '';
+      card.innerHTML = imgHTML + '<div class="card-body">' + catHTML + '<div class="card-name">' + esc(p.name) + '</div>' + priceHTML + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.btnLabel || 'BUY ON OOPBUY') + '</a></div>' + delBtn + editBtn;
       grid.appendChild(card);
     });
     if (editMode) grid.classList.add('edit-mode');
@@ -559,14 +659,90 @@
 
   function openModal() {
     if (!isAdmin) return;
+    editingId = null;
+    document.getElementById('modal-title-text').textContent = 'Add new product';
+    document.getElementById('modal-save-btn').textContent = 'Add product';
     document.getElementById('overlay').classList.add('open');
     imageDataURL = null;
-    ['imgFile','prodName','prodDesc','prodBtnLabel','prodLink','imgUrl'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    ['imgFile','prodName','prodDesc','prodBtnLabel','prodLink','imgUrl','sourceLink'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
     document.getElementById('prodCategory').value = '';
     document.getElementById('previewWrap').style.display = 'none';
+    document.getElementById('converterStatus').textContent = '';
+    document.getElementById('converterStatus').className = 'converter-status';
     switchImgTab('upload');
   }
-  function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+  function openEditModal(id) {
+    if (!isAdmin) return;
+    var p = cachedProducts.find(function(x){ return x.id === id; });
+    if (!p) return;
+    editingId = id;
+    imageDataURL = p.image || null;
+    document.getElementById('modal-title-text').textContent = 'Edit product';
+    document.getElementById('modal-save-btn').textContent = 'Save changes';
+    document.getElementById('prodName').value = p.name || '';
+    document.getElementById('prodCategory').value = p.category || '';
+    document.getElementById('prodDesc').value = p.desc || '';
+    document.getElementById('prodBtnLabel').value = p.btnLabel || '';
+    document.getElementById('prodLink').value = p.link || '';
+    document.getElementById('sourceLink').value = '';
+    document.getElementById('converterStatus').textContent = '';
+    document.getElementById('converterStatus').className = 'converter-status';
+    if (p.image) {
+      document.getElementById('previewImg').src = p.image;
+      document.getElementById('previewWrap').style.display = 'block';
+      switchImgTab('link');
+      document.getElementById('imgUrl').value = p.image;
+    } else {
+      document.getElementById('previewWrap').style.display = 'none';
+      switchImgTab('upload');
+    }
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  async function updateProduct() {
+    if (!isAdmin || !editingId) return;
+    var name = document.getElementById('prodName').value.trim();
+    var category = document.getElementById('prodCategory').value;
+    var desc = document.getElementById('prodDesc').value.trim();
+    var btnLabel = document.getElementById('prodBtnLabel').value.trim() || 'BUY ON OOPBUY';
+    var link = document.getElementById('prodLink').value.trim();
+    if (!name) { toast('Please enter a product name.'); return; }
+    if (!link)  { toast('Please enter a button link.'); return; }
+    // Resolve image: url tab takes priority, then in-memory imageDataURL, then existing image
+    var imgUrlEl = document.getElementById('imgUrl');
+    var imgVal;
+    if (imgUrlEl.style.display !== 'none') {
+      imgVal = imgUrlEl.value.trim() || null;
+    } else {
+      imgVal = imageDataURL;
+    }
+    // Refresh session to make sure RLS sees the authenticated user
+    var { data: sessionData } = await sb.auth.getSession();
+    if (!sessionData.session) { toast('Session expired, please log in again.'); return; }
+    var { data: updData, error } = await sb.from('products')
+      .update({ name: name, category: category, desc: desc, btn_label: btnLabel, link: link, image: imgVal })
+      .eq('id', editingId)
+      .select();
+    if (error) { console.error('Update error:', error); toast('Error: ' + error.message); return; }
+    if (!updData || updData.length === 0) {
+      // RLS blocked or id mismatch — try string coercion
+      var { data: updData2, error: err2 } = await sb.from('products')
+        .update({ name: name, category: category, desc: desc, btn_label: btnLabel, link: link, image: imgVal })
+        .eq('id', String(editingId))
+        .select();
+      if (err2 || !updData2 || updData2.length === 0) {
+        toast('Update failed — check Supabase RLS policies allow authenticated updates.');
+        console.error('Second attempt:', err2, updData2);
+        return;
+      }
+    }
+    editingId = null;
+    await reload(document.getElementById('searchInput').value);
+    closeModal();
+    toast('Product updated!');
+  }
+
+    function closeModal() { document.getElementById('overlay').classList.remove('open'); }
   function handleOverlayClick(e) { if (e.target === e.currentTarget) closeModal(); }
 
   function switchImgTab(tab) {
@@ -593,9 +769,7 @@
     }
   }
 
-  function handleFile(e) {
-    readImageFile(e.target.files[0]);
-  }
+  function handleFile(e) { readImageFile(e.target.files[0]); }
 
   function readImageFile(file) {
     if (!file || !file.type.startsWith('image/')) return;
