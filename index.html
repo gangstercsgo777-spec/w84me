@@ -13,6 +13,7 @@
     --font: 'Inter', system-ui, -apple-system, sans-serif;
   }
   body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+  #topNotice { background: rgba(156,174,255,0.1); border-bottom: 1px solid rgba(156,174,255,0.25); padding: 10px 24px; font-size: 13px; color: var(--accent); text-align: center; font-weight: 500; }
   header { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; color: var(--text); white-space: nowrap; }
   .logo span { color: var(--accent); }
@@ -143,6 +144,7 @@
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
+<div id="topNotice">To bypass the Risk Warnings, use the app. To copy the link on mobile just long press &ldquo;BUY ON OOPBUY&rdquo; and click &ldquo;Copy link&rdquo;, then paste it in app.</div>
 <div id="editBanner">&#9999;&#65039; Edit mode &mdash; click &times; on any card to remove it. Click &ldquo;Done&rdquo; when finished.</div>
 <header>
   <div class="logo">the tuff spreadsheet</div>
