@@ -341,7 +341,7 @@
       <button class="sort-pill" data-sort="price-asc" onclick="setSort('price-asc')">Price: low to high</button>
       <button class="sort-pill" data-sort="price-desc" onclick="setSort('price-desc')">Price: high to low</button>
     </div>
-    <div id="grid"><div id="empty"><strong>Products loading</strong><p>Please wait 3-5 seconds.</p></div></div>
+    <div id="grid"><div id="empty"><strong>Products loading...</strong><p>Please wait 3-5 seconds.</p></div></div>
   </div>
 </main>
 
@@ -670,7 +670,7 @@
     grid.innerHTML = '';
     if (!filtered.length) {
       const el = document.createElement('div'); el.id = 'empty';
-      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<strong>Products loading</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>';
+      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<strong>Products loading...</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>';
       grid.appendChild(el); return;
     }
     filtered.forEach(function(p) {
