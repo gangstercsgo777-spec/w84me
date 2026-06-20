@@ -670,7 +670,7 @@
     grid.innerHTML = '';
     if (!filtered.length) {
       const el = document.createElement('div'); el.id = 'empty';
-      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<strong>Products loading</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Please wait 3-5 seconds.') + '</p>';
+      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<strong>Products loading</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>';
       grid.appendChild(el); return;
     }
     filtered.forEach(function(p) {
