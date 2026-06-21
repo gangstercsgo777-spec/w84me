@@ -443,7 +443,7 @@
         <div class="welcome-link-icon" style="background:rgba(255,137,10,0.15);font-size:18px;">🛍️</div>
         <div class="welcome-link-text">
           <span>Register to</span>
-          LitBuy and get $400+ in coupons! Best agent right now. 🔥
+          LitBuy
         </div>
       </a>
     </div>
@@ -455,13 +455,47 @@
   const SUPABASE_URL = 'https://dgkxehuffqqdcewlcqgt.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_ol0jPCPCkojB_KvkZT-HTA_xXpKW3JJ';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const CATEGORIES = ["T-Shirts","Hoodies","Pants","Jeans","Shorts","Shoes","Puffers","Accessories","Room Decor"];
+  const CATEGORIES = ["T-Shirts","Hoodies","Pants","Jeans","Shorts","Shoes","Puffers","Accessories","Room Decor","Longsleeve","Tracksuit","Sweater","Jacket"];
   const INVITE_CODE = 'IFIGEUGZV';
   let editMode = false, imageDataURL = null, editingId = null;
   let activeCategory = '';
   let activeSort = 'newest';
   let isAdmin = false;
   let cachedProducts = [];
+  let categoryAutoFilled = true;
+
+  /* ── Category auto-detect from product name ── */
+  // Checked in order; more specific terms come before broader ones
+  // (e.g. "puffer" before "jacket", "long sleeve" before "tee").
+  const CATEGORY_KEYWORDS = [
+    { cat: 'Longsleeve',  re: /\b(long[\s-]?sleeve|longsleeve|ls\s?tee)\b/i },
+    { cat: 'Tracksuit',   re: /\b(tracksuit|track[\s-]?suit)\b/i },
+    { cat: 'Puffers',     re: /\b(puffer|puffers|puffy|down[\s-]?jacket)\b/i },
+    { cat: 'Jeans',       re: /\b(jeans|denim)\b/i },
+    { cat: 'Shorts',      re: /\bshorts?\b/i },
+    { cat: 'Hoodies',     re: /\b(hoodie|hoody|hoodies)\b/i },
+    { cat: 'Sweater',     re: /\b(sweater|jumper|cardigan|pullover|knitwear|knit)\b/i },
+    { cat: 'Jacket',      re: /\b(jacket|coat|windbreaker|bomber|parka)\b/i },
+    { cat: 'Pants',       re: /\b(pants|trousers|sweatpants|joggers|track[\s-]?pants)\b/i },
+    { cat: 'Shoes',       re: /\b(shoes?|sneakers?|trainers?|boots?)\b/i },
+    { cat: 'T-Shirts',    re: /\b(t[\s-]?shirts?|tees?)\b/i },
+    { cat: 'Room Decor',  re: /\b(room[\s-]?decor|poster|rug|tapestry|pillow|blanket|lamp)\b/i },
+    { cat: 'Accessories', re: /\b(belt|wallet|cap|beanie|scarf|gloves?|socks?|backpack|keychain|jewelry|necklace|bracelet|ring|watch|sunglasses|glasses|accessor(y|ies))\b/i }
+  ];
+
+  function detectCategoryFromName(name) {
+    if (!name) return '';
+    for (var i = 0; i < CATEGORY_KEYWORDS.length; i++) {
+      if (CATEGORY_KEYWORDS[i].re.test(name)) return CATEGORY_KEYWORDS[i].cat;
+    }
+    return '';
+  }
+
+  function autoDetectCategory() {
+    if (!categoryAutoFilled) return;
+    var guess = detectCategoryFromName(document.getElementById('prodName').value);
+    if (guess) document.getElementById('prodCategory').value = guess;
+  }
 
   /* ── Link converter ── */
   function detectAndConvert(raw) {
@@ -770,6 +804,7 @@
     document.getElementById('modal-save-btn').textContent = 'Add product';
     document.getElementById('overlay').classList.add('open');
     imageDataURL = null;
+    categoryAutoFilled = true;
     ['imgFile','prodName','prodDesc','prodBtnLabel','prodLink','imgUrl','sourceLink'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
     document.getElementById('prodCategory').value = '';
     document.getElementById('previewWrap').style.display = 'none';
@@ -783,6 +818,7 @@
     if (!p) return;
     editingId = id;
     imageDataURL = p.image || null;
+    categoryAutoFilled = !p.category;
     document.getElementById('modal-title-text').textContent = 'Edit product';
     document.getElementById('modal-save-btn').textContent = 'Save changes';
     document.getElementById('prodName').value = p.name || '';
@@ -908,6 +944,8 @@
   });
 
   document.getElementById('searchInput').addEventListener('input', function(e){ render(e.target.value); });
+  document.getElementById('prodName').addEventListener('input', autoDetectCategory);
+  document.getElementById('prodCategory').addEventListener('change', function(){ categoryAutoFilled = false; });
 
   var toastTimer;
   function toast(msg) {
