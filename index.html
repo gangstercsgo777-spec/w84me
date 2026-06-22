@@ -81,11 +81,24 @@
   .views-badge svg { flex-shrink: 0; }
 
   /* Floating LitBuy promo */
-  #litbuyPromo { position: fixed; bottom: 20px; right: 20px; z-index: 400; display: flex; align-items: center; gap: 10px; background: rgba(16,16,16,0.82); backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); border: 1px solid rgba(255,137,10,0.45); border-radius: 14px; padding: 11px 16px; box-shadow: 0 0 32px rgba(255,137,10,0.18), 0 8px 32px rgba(0,0,0,0.5); max-width: 310px; text-decoration: none; transition: transform var(--dur-med) var(--ease-out-expo), box-shadow var(--dur-med) ease; animation: promoSlideIn 0.6s 1.2s var(--ease-spring) both; }
+  #litbuyPromo { position: fixed; bottom: 20px; right: 20px; z-index: 400; display: flex; align-items: center; gap: 10px; background: rgba(16,16,16,0.82); backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); border: 1px solid rgba(255,137,10,0.45); border-radius: 14px; padding: 11px 16px; box-shadow: 0 0 32px rgba(255,137,10,0.18), 0 8px 32px rgba(0,0,0,0.5); max-width: 310px; text-decoration: none; transition: transform var(--dur-med) var(--ease-out-expo), box-shadow var(--dur-med) ease; animation: promoSlideIn 0.6s 1.2s var(--ease-spring) both, promoPulse 3s 2.5s ease-in-out infinite; }
   @keyframes promoSlideIn { from { opacity: 0; transform: translateY(24px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-  #litbuyPromo:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 44px rgba(255,137,10,0.3), 0 12px 40px rgba(0,0,0,0.55); }
+  @keyframes promoPulse {
+    0%   { box-shadow: 0 0 32px rgba(255,137,10,0.18), 0 8px 32px rgba(0,0,0,0.5); border-color: rgba(255,137,10,0.45); transform: scale(1); }
+    30%  { box-shadow: 0 0 48px rgba(255,137,10,0.55), 0 8px 40px rgba(0,0,0,0.55); border-color: rgba(255,137,10,0.9); transform: scale(1.04); }
+    50%  { box-shadow: 0 0 32px rgba(255,137,10,0.18), 0 8px 32px rgba(0,0,0,0.5); border-color: rgba(255,137,10,0.45); transform: scale(1); }
+    70%  { box-shadow: 0 0 44px rgba(255,137,10,0.45), 0 8px 36px rgba(0,0,0,0.52); border-color: rgba(255,137,10,0.75); transform: scale(1.025); }
+    100% { box-shadow: 0 0 32px rgba(255,137,10,0.18), 0 8px 32px rgba(0,0,0,0.5); border-color: rgba(255,137,10,0.45); transform: scale(1); }
+  }
+  #litbuyPromo:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 44px rgba(255,137,10,0.3), 0 12px 40px rgba(0,0,0,0.55); animation-play-state: paused; }
   #litbuyPromo:active { transform: scale(0.97); }
-  .promo-icon { font-size: 22px; flex-shrink: 0; }
+  .promo-icon { font-size: 22px; flex-shrink: 0; animation: promoIconWiggle 3s 2.5s ease-in-out infinite; }
+  @keyframes promoIconWiggle {
+    0%,100% { transform: rotate(0deg) scale(1); }
+    25%      { transform: rotate(-15deg) scale(1.2); }
+    50%      { transform: rotate(10deg) scale(1.15); }
+    75%      { transform: rotate(-8deg) scale(1.1); }
+  }
   .promo-text { font-size: 12.5px; font-weight: 700; color: var(--accent); line-height: 1.35; }
   .promo-text span { display: block; font-size: 11px; font-weight: 500; color: var(--text-muted); }
   #litbuyPromoClose { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px 0 2px 4px; font-size: 16px; line-height: 1; flex-shrink: 0; transition: color var(--dur-fast) ease; }
