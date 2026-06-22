@@ -420,36 +420,41 @@
   let categoryAutoFilled = true;
   let pinnedIds = JSON.parse(localStorage.getItem('tuff_pinned') || '[]');
 
-  /* ── Views tracking ── */
-  function getViews() {
-    try { return JSON.parse(localStorage.getItem('tuff_views') || '{}'); } catch(e) { return {}; }
+  /* ── Site visits in last 24h ── */
+  function recordSiteVisit() {
+    try {
+      var visits = JSON.parse(localStorage.getItem('tuff_site_visits') || '[]');
+      var now = Date.now();
+      visits.push(now);
+      // Keep only last 24h
+      visits = visits.filter(function(t){ return now - t < 86400000; });
+      localStorage.setItem('tuff_site_visits', JSON.stringify(visits));
+      updateViews24hBadge();
+    } catch(e) {}
   }
-  function saveViews(v) { localStorage.setItem('tuff_views', JSON.stringify(v)); }
-  function recordView(productId) {
-    var views = getViews();
-    var now = Date.now();
-    if (!views[productId]) views[productId] = [];
-    views[productId].push(now);
-    // Keep only last 7 days to avoid bloat
-    views[productId] = views[productId].filter(function(t){ return now - t < 7 * 86400000; });
-    saveViews(views);
-    updateViews24hBadge();
-  }
-  function getViewCount(productId) {
-    var views = getViews();
-    var now = Date.now();
-    return (views[productId] || []).filter(function(t){ return now - t < 86400000; }).length;
-  }
-  function getTotalViews24h() {
-    var views = getViews();
-    var now = Date.now();
-    var total = 0;
-    Object.values(views).forEach(function(arr){ arr.forEach(function(t){ if (now - t < 86400000) total++; }); });
-    return total;
+  function getSiteVisits24h() {
+    try {
+      var visits = JSON.parse(localStorage.getItem('tuff_site_visits') || '[]');
+      var now = Date.now();
+      return visits.filter(function(t){ return now - t < 86400000; }).length;
+    } catch(e) { return 0; }
   }
   function updateViews24hBadge() {
     var el = document.getElementById('views24hCount');
-    if (el) el.textContent = getTotalViews24h();
+    if (el) el.textContent = getSiteVisits24h();
+  }
+
+  /* ── Permanent product views (buy clicks) ── */
+  function getProductViews() {
+    try { return JSON.parse(localStorage.getItem('tuff_product_views') || '{}'); } catch(e) { return {}; }
+  }
+  function recordView(productId) {
+    var views = getProductViews();
+    views[productId] = (views[productId] || 0) + 1;
+    localStorage.setItem('tuff_product_views', JSON.stringify(views));
+  }
+  function getViewCount(productId) {
+    return getProductViews()[productId] || 0;
   }
 
   /* ── Pin management ── */
@@ -613,6 +618,7 @@
     populateCategorySelect();
     initPresence();
     updateViews24hBadge();
+    recordSiteVisit();
     await reload();
   }
 
@@ -756,7 +762,7 @@
       const catHTML = p.category ? '<div class="card-cat">' + esc(p.category) + '</div>' : '';
       const priceHTML = p.desc ? '<div class="card-price">' + esc(p.desc) + '</div>' : '';
       const viewCount = getViewCount(p.id);
-      const viewsHTML = '<div class="card-views"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' + viewCount + ' views today</div>';
+      const viewsHTML = '<div class="card-views"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' + viewCount + ' views</div>';
       const pinBadge = isPinned ? '<div class="card-pin-badge"><svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>PINNED</div>' : '';
       const delBtn = isAdmin ? '<button class="card-delete" onclick="deleteProduct(&quot;' + p.id + '&quot;)" title="Remove">&times;</button>' : '';
       const editBtn = isAdmin ? '<button class="card-edit" onclick="openEditModal(&quot;' + p.id + '&quot;)" title="Edit"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' : '';
