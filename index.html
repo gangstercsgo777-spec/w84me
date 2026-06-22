@@ -420,41 +420,51 @@
   let categoryAutoFilled = true;
   let pinnedIds = JSON.parse(localStorage.getItem('tuff_pinned') || '[]');
 
-  /* ── Site visits in last 24h ── */
-  function recordSiteVisit() {
+  /* ── Site visits in last 24h (Supabase) ──
+     Table: site_visits (id uuid default gen_random_uuid(), visited_at timestamptz default now())
+     RLS: insert allowed for anon, select allowed for anon
+  ── */
+  async function recordSiteVisit() {
     try {
-      var visits = JSON.parse(localStorage.getItem('tuff_site_visits') || '[]');
-      var now = Date.now();
-      visits.push(now);
-      // Keep only last 24h
-      visits = visits.filter(function(t){ return now - t < 86400000; });
-      localStorage.setItem('tuff_site_visits', JSON.stringify(visits));
-      updateViews24hBadge();
+      await sb.from('site_visits').insert({ visited_at: new Date().toISOString() });
+      await fetchSiteVisits24h();
     } catch(e) {}
   }
-  function getSiteVisits24h() {
+  async function fetchSiteVisits24h() {
     try {
-      var visits = JSON.parse(localStorage.getItem('tuff_site_visits') || '[]');
-      var now = Date.now();
-      return visits.filter(function(t){ return now - t < 86400000; }).length;
-    } catch(e) { return 0; }
+      var since = new Date(Date.now() - 86400000).toISOString();
+      var { count } = await sb.from('site_visits').select('*', { count: 'exact', head: true }).gte('visited_at', since);
+      var el = document.getElementById('views24hCount');
+      if (el) el.textContent = count || 0;
+    } catch(e) {}
   }
-  function updateViews24hBadge() {
-    var el = document.getElementById('views24hCount');
-    if (el) el.textContent = getSiteVisits24h();
-  }
+  function updateViews24hBadge() { fetchSiteVisits24h(); }
 
-  /* ── Permanent product views (buy clicks) ── */
-  function getProductViews() {
-    try { return JSON.parse(localStorage.getItem('tuff_product_views') || '{}'); } catch(e) { return {}; }
+  /* ── Permanent product views (Supabase) ──
+     Table: product_views (product_id text primary key, views integer default 0)
+     RLS: select + update allowed for anon
+  ── */
+  var cachedProductViews = {};
+  async function fetchAllProductViews() {
+    try {
+      var { data } = await sb.from('product_views').select('product_id, views');
+      if (data) data.forEach(function(r){ cachedProductViews[r.product_id] = r.views; });
+    } catch(e) {}
   }
-  function recordView(productId) {
-    var views = getProductViews();
-    views[productId] = (views[productId] || 0) + 1;
-    localStorage.setItem('tuff_product_views', JSON.stringify(views));
+  async function recordView(productId) {
+    try {
+      // Upsert: increment if exists, insert with 1 if not
+      var current = cachedProductViews[productId] || 0;
+      cachedProductViews[productId] = current + 1;
+      // Update the card view count live without full re-render
+      document.querySelectorAll('.card[data-id="' + productId + '"] .card-views').forEach(function(el){
+        el.innerHTML = el.innerHTML.replace(/\d+ views/, (current + 1) + ' views');
+      });
+      await sb.from('product_views').upsert({ product_id: productId, views: current + 1 }, { onConflict: 'product_id' });
+    } catch(e) {}
   }
   function getViewCount(productId) {
-    return getProductViews()[productId] || 0;
+    return cachedProductViews[productId] || 0;
   }
 
   /* ── Pin management ── */
@@ -617,8 +627,9 @@
     buildCategoryUI();
     populateCategorySelect();
     initPresence();
-    updateViews24hBadge();
+    fetchSiteVisits24h();
     recordSiteVisit();
+    await fetchAllProductViews();
     await reload();
   }
 
