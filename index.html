@@ -420,48 +420,64 @@
   let categoryAutoFilled = true;
   let pinnedIds = JSON.parse(localStorage.getItem('tuff_pinned') || '[]');
 
-  /* ── Site visits in last 24h (Supabase) ──
-     Table: site_visits (id uuid default gen_random_uuid(), visited_at timestamptz default now())
-     RLS: insert allowed for anon, select allowed for anon
-  ── */
+  /* ── Site visits in last 24h (Supabase) ── */
   async function recordSiteVisit() {
     try {
-      await sb.from('site_visits').insert({ visited_at: new Date().toISOString() });
+      var { error } = await sb.from('site_visits').insert({ visited_at: new Date().toISOString() });
+      if (error) console.warn('site_visits insert:', error.message);
       await fetchSiteVisits24h();
-    } catch(e) {}
+    } catch(e) { console.warn('recordSiteVisit:', e); }
   }
   async function fetchSiteVisits24h() {
     try {
       var since = new Date(Date.now() - 86400000).toISOString();
-      var { count } = await sb.from('site_visits').select('*', { count: 'exact', head: true }).gte('visited_at', since);
+      var { count, error } = await sb.from('site_visits').select('*', { count: 'exact', head: true }).gte('visited_at', since);
+      if (error) { console.warn('fetchSiteVisits24h:', error.message); return; }
       var el = document.getElementById('views24hCount');
       if (el) el.textContent = count || 0;
-    } catch(e) {}
+    } catch(e) { console.warn('fetchSiteVisits24h:', e); }
   }
   function updateViews24hBadge() { fetchSiteVisits24h(); }
 
-  /* ── Permanent product views (Supabase) ──
-     Table: product_views (product_id text primary key, views integer default 0)
-     RLS: select + update allowed for anon
+  /* ── Permanent product views (Supabase — atomic RPC increment) ──
+     Requires this function in Supabase SQL editor:
+
+     create or replace function increment_product_view(p_id text)
+     returns void language plpgsql security definer as $$
+     begin
+       insert into product_views (product_id, views) values (p_id, 1)
+       on conflict (product_id) do update set views = product_views.views + 1;
+     end;
+     $$;
+     grant execute on function increment_product_view(text) to anon;
   ── */
   var cachedProductViews = {};
   async function fetchAllProductViews() {
     try {
-      var { data } = await sb.from('product_views').select('product_id, views');
+      var { data, error } = await sb.from('product_views').select('product_id, views');
+      if (error) { console.warn('fetchAllProductViews:', error.message); return; }
       if (data) data.forEach(function(r){ cachedProductViews[r.product_id] = r.views; });
-    } catch(e) {}
+    } catch(e) { console.warn('fetchAllProductViews:', e); }
   }
   async function recordView(productId) {
     try {
-      // Upsert: increment if exists, insert with 1 if not
-      var current = cachedProductViews[productId] || 0;
-      cachedProductViews[productId] = current + 1;
-      // Update the card view count live without full re-render
+      // Optimistic UI update
+      cachedProductViews[productId] = (cachedProductViews[productId] || 0) + 1;
+      var newCount = cachedProductViews[productId];
       document.querySelectorAll('.card[data-id="' + productId + '"] .card-views').forEach(function(el){
-        el.innerHTML = el.innerHTML.replace(/\d+ views/, (current + 1) + ' views');
+        el.innerHTML = el.innerHTML.replace(/\d+ views/, newCount + ' views');
       });
-      await sb.from('product_views').upsert({ product_id: productId, views: current + 1 }, { onConflict: 'product_id' });
-    } catch(e) {}
+      // Atomic server-side increment via RPC (avoids race conditions between devices)
+      var { error } = await sb.rpc('increment_product_view', { p_id: productId });
+      if (error) {
+        console.warn('increment_product_view RPC failed, trying upsert fallback:', error.message);
+        // Fallback: re-fetch real count then upsert
+        var { data } = await sb.from('product_views').select('views').eq('product_id', productId).single();
+        var realCount = (data ? data.views : 0) + 1;
+        cachedProductViews[productId] = realCount;
+        await sb.from('product_views').upsert({ product_id: productId, views: realCount }, { onConflict: 'product_id' });
+      }
+    } catch(e) { console.warn('recordView:', e); }
   }
   function getViewCount(productId) {
     return cachedProductViews[productId] || 0;
