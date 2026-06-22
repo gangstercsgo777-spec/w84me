@@ -131,8 +131,10 @@
     .online-badge { padding: 5px 8px; }
     .card-body { padding: 10px 10px 12px; gap: 7px; }
     .card-name { font-size: 12px; }
+    .card-price { font-size: 14px; }
     .card-btn { font-size: 11px; padding: 7px 0; }
     .card-cat { font-size: 10px; }
+    .price-break { display: block; }
   }
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.18s; text-decoration: none; }
   .btn-primary { background: var(--accent); color: #0a0a0a; transition: background var(--dur-fast) ease, box-shadow var(--dur-med) ease, transform var(--dur-fast) var(--ease-spring); }
@@ -192,7 +194,8 @@
   .card:hover .card-body { transform: translateY(-2px); }
   .card-name { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text); word-break: break-word; }
   .card-cat { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; }
-  .card-price { font-size: clamp(12px, 3.5vw, 17px); font-weight: 700; color: var(--accent); letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-price { font-size: 17px; font-weight: 700; color: var(--accent); letter-spacing: -0.01em; }
+  .price-break { display: inline; }
   .card-btn { display: block; width: 100%; padding: 9px 0; background: var(--accent); color: #0a0a0a; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none; transition: background var(--dur-fast) ease, box-shadow var(--dur-med) ease, transform var(--dur-fast) var(--ease-spring); letter-spacing: 0.01em; }
   .card-btn:hover { background: var(--accent-hover); box-shadow: 0 0 20px var(--accent-glow), 0 4px 16px rgba(255,137,10,0.3); transform: translateY(-1px); }
   .card-btn:active { transform: scale(0.97) translateY(0); transition-duration: 60ms; }
@@ -402,7 +405,7 @@
 <!-- Floating LitBuy Promo -->
 <a id="litbuyPromo" href="https://litbuy.com/register?inviteCode=IFIGEUGZV" target="_blank" rel="noopener">
   <span class="promo-icon">🔥</span>
-  <div class="promo-text">Register to LitBuy and get -70% discount for shipping here. 🔥<span>Tap to claim your discount ➡️</span></div>
+  <div class="promo-text">Register to LitBuy and get $400 in coupons. 🔥<span>Tap to claim your discount →</span></div>
   <button id="litbuyPromoClose" onclick="event.preventDefault();event.stopPropagation();this.parentElement.style.display='none'" title="Dismiss">&times;</button>
 </a>
 
@@ -788,7 +791,7 @@
       card.className = 'card'; card.dataset.id = p.id;
       const imgHTML = p.image ? '<img class="card-img" src="' + esc(p.image) + '" alt="' + esc(p.name) + '" loading="lazy">' : '<div class="card-img-placeholder">No image</div>';
       const catHTML = p.category ? '<div class="card-cat">' + esc(p.category) + '</div>' : '';
-      const priceHTML = p.desc ? '<div class="card-price">' + esc(p.desc) + '</div>' : '';
+      const priceHTML = p.desc ? '<div class="card-price">' + esc(p.desc).replace('≈', '<span class="price-break">≈</span>') + '</div>' : '';
       const viewCount = getViewCount(p.id);
       const viewsHTML = '<div class="card-views"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' + viewCount + ' views</div>';
       const pinBadge = isPinned ? '<div class="card-pin-badge"><svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>PINNED</div>' : '';
