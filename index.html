@@ -205,6 +205,8 @@
   #empty { grid-column: 1/-1; text-align: center; padding: 80px 0; color: var(--text-muted); }
   #empty p { font-size: 15px; margin-top: 8px; }
   #empty strong { display: block; font-size: 18px; color: var(--text); margin-bottom: 6px; }
+  .loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,137,10,0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
   .overlay.open { display: flex; animation: fadeOverlay 0.3s var(--ease-out-expo) both; }
   @keyframes fadeOverlay { from { opacity: 0; backdrop-filter: blur(0px); } to { opacity: 1; backdrop-filter: blur(2px); } }
@@ -334,7 +336,7 @@
         <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:-1px;margin-right:3px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Most viewed
       </button>
     </div>
-    <div id="grid"><div id="empty"><strong>Products loading...</strong><p>Please wait 3-5 seconds.</p></div></div>
+    <div id="grid"><div id="empty"><div class="loading-spinner"></div><strong>Products loading...</strong><p>Please wait 3-5 seconds.</p></div></div>
   </div>
 </main>
 
@@ -778,7 +780,7 @@
     grid.innerHTML = '';
     if (!filtered.length) {
       const el = document.createElement('div'); el.id = 'empty';
-      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<strong>Products loading...</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>';
+      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<div class="loading-spinner"></div><strong>Products loading...</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>';
       grid.appendChild(el); return;
     }
     filtered.forEach(function(p) {
