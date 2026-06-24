@@ -350,7 +350,7 @@
         <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:-1px;margin-right:3px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Most viewed
       </button>
     </div>
-    <div id="grid"><div id="empty"><div class="loading-spinner"></div><strong>Products loading...</strong><p>Please wait 3-5 seconds.</p></div></div>
+    <div id="grid"><div id="empty"><div class="loading-spinner"></div><strong>Products loading...</strong><p>Please wait...</p></div></div>
   </div>
 </main>
 
@@ -433,6 +433,7 @@
   let activeSort = 'newest';
   let isAdmin = false;
   let cachedProducts = [];
+  let initialLoadDone = false;
   let categoryAutoFilled = true;
   let pinnedIds = JSON.parse(localStorage.getItem('tuff_pinned') || '[]');
 
@@ -750,6 +751,7 @@
 
   async function reload(filter) {
     cachedProducts = await load();
+    initialLoadDone = true;
     render(filter);
   }
 
@@ -793,7 +795,7 @@
     grid.innerHTML = '';
     if (!filtered.length) {
       const el = document.createElement('div'); el.id = 'empty';
-      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<div class="loading-spinner"></div><strong>Products loading...</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>';
+      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : (initialLoadDone ? '<strong>' + (activeCategory ? 'No products in this category yet.' : 'No products yet.') + '</strong><p>Will add soon!</p>' : '<div class="loading-spinner"></div><strong>Products loading...</strong><p>Please wait...</p>');
       grid.appendChild(el); return;
     }
     filtered.forEach(function(p) {
