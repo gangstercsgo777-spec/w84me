@@ -661,8 +661,7 @@
     initPresence();
     fetchSiteVisits24h();
     recordSiteVisit();
-    await fetchAllProductViews();
-    await reload();
+    await Promise.all([fetchAllProductViews(), reload()]);
   }
 
   function buildCategoryUI() {
