@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Tuff Spreadsheet</title>
+<link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap'>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -351,7 +351,7 @@
   .card-price {
     font-family: var(--font-mono);
     font-size: 15px; font-weight: 500;
-    color: var(--accent); margin-top: 2px;
+    color: #ff6b00 !important; margin-top: 2px;
   }
   .price-break { display: inline; }
   .card-views {
@@ -437,7 +437,7 @@
     border-top-color: var(--accent);
     border-right-color: rgba(255,107,0,.4);
     border-radius: 50%;
-    animation: spin 1.8s cubic-bezier(0.4,0,0.2,1) infinite;
+    animation: spin 3s linear infinite;
     margin: 0 auto 20px;
   }
 
@@ -658,6 +658,112 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
   }
+
+  /* ── Welcome Popup ── */
+  #welcomePopup {
+    position: fixed; inset: 0; z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,0);
+    backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px);
+    transition: background 0.5s ease, backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease;
+    pointer-events: none;
+  }
+  #welcomePopup.visible {
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    pointer-events: all;
+  }
+  #welcomePopup.hiding {
+    background: rgba(0,0,0,0) !important;
+    backdrop-filter: blur(0px) !important; -webkit-backdrop-filter: blur(0px) !important;
+    pointer-events: none;
+  }
+  @keyframes welcomeGlow {
+    0%,100% { box-shadow: 0 0 0 1px rgba(255,107,0,0.2), 0 0 60px rgba(255,107,0,0.15), 0 40px 80px rgba(0,0,0,0.7); }
+    50%      { box-shadow: 0 0 0 1px rgba(255,107,0,0.45), 0 0 100px rgba(255,107,0,0.35), 0 40px 80px rgba(0,0,0,0.7); }
+  }
+  .welcome-card {
+    position: relative;
+    background: #111;
+    border: 1px solid rgba(255,107,0,0.35);
+    border-radius: 24px;
+    padding: 48px 36px 36px;
+    max-width: 400px; width: 100%;
+    text-align: center;
+    box-shadow: 0 0 0 1px rgba(255,107,0,0.2), 0 0 60px rgba(255,107,0,0.15), 0 40px 80px rgba(0,0,0,0.7);
+    transform: translateY(36px) scale(0.93);
+    opacity: 0;
+    transition: transform 0.65s cubic-bezier(0.34,1.56,0.64,1), opacity 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  #welcomePopup.visible .welcome-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    animation: welcomeGlow 3s 1s ease-in-out infinite;
+  }
+  #welcomePopup.hiding .welcome-card {
+    transform: translateY(20px) scale(0.95) !important;
+    opacity: 0 !important;
+    animation: none !important;
+    transition: transform 0.35s cubic-bezier(0.4,0,1,1), opacity 0.3s ease !important;
+  }
+  .welcome-close {
+    position: absolute; top: 14px; right: 14px;
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+    color: #fff; font-size: 20px; line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, border-color 0.2s, color 0.15s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .welcome-close:hover {
+    background: rgba(255,107,0,0.2);
+    border-color: rgba(255,107,0,0.7);
+    color: #ff6b00;
+    transform: rotate(90deg) scale(1.1);
+  }
+  .welcome-close:active { transform: rotate(90deg) scale(0.9); }
+  .welcome-emoji { font-size: 44px; margin-bottom: 18px; display: block; }
+  .welcome-title {
+    font-size: 24px; font-weight: 700;
+    letter-spacing: -0.03em; line-height: 1.2;
+    color: #fff; margin-bottom: 12px;
+  }
+  .welcome-title span { color: #ff6b00; }
+  .welcome-desc {
+    font-size: 14px; color: #777;
+    line-height: 1.65; margin-bottom: 28px;
+  }
+  .welcome-desc strong { color: #ccc; font-weight: 600; }
+  .welcome-cta {
+    display: block; width: 100%;
+    padding: 15px 0;
+    background: #ff6b00; color: #000;
+    border: none; border-radius: 12px;
+    font-family: var(--font-display);
+    font-size: 15px; font-weight: 700;
+    text-align: center; text-decoration: none; cursor: pointer;
+    letter-spacing: -0.01em;
+    box-shadow: 0 0 24px rgba(255,107,0,0.35);
+    transition: background 0.15s, box-shadow 0.25s, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .welcome-cta:hover { background: #ff8533; box-shadow: 0 0 44px rgba(255,107,0,0.55); transform: translateY(-2px); }
+  .welcome-cta:active { transform: scale(0.97); }
+  .welcome-skip {
+    display: block; margin-top: 18px;
+    font-size: 12px; color: #444;
+    background: none; border: none;
+    font-family: var(--font-display);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: transparent;
+    transition: color 0.15s, text-decoration-color 0.2s;
+  }
+  .welcome-skip:hover { color: #777; text-decoration-color: #444; }
+  #welcomePopup.gone { display: none !important; }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -784,6 +890,22 @@
   <div class="promo-text">Register to LitBuy and get $500 in coupons / 70% discount on shipping. 🔥<span>🟥 Tap to claim your discount</span></div>
 
 </a>
+
+<!-- Welcome Popup -->
+<div id="welcomePopup">
+  <div class="welcome-card">
+    <button class="welcome-close" onclick="closeWelcome()" aria-label="Close">&times;</button>
+    <span class="welcome-emoji">🛍️</span>
+    <div class="welcome-title">Get <span>$500 in coupons</span><br>+ 70% off shipping</div>
+    <div class="welcome-desc">
+      Register on <strong>LitBuy</strong> to unlock exclusive discounts on every product in this spreadsheet — completely free to join.
+    </div>
+    <a class="welcome-cta" href="https://litbuy.com/register?inviteCode=W84ME" target="_blank" rel="noopener" onclick="closeWelcome()">
+      Claim my discount on LitBuy →
+    </a>
+    <button class="welcome-skip" onclick="closeWelcome()">I'll check it out later, take me to the spreadsheet</button>
+  </div>
+</div>
 
 <div id="toast"></div>
 <script>
@@ -1381,7 +1503,22 @@
     clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2500);
   }
 
+
+  // Welcome popup
+  function closeWelcome() {
+    var el = document.getElementById('welcomePopup');
+    if (!el) return;
+    el.classList.remove('visible');
+    el.classList.add('hiding');
+    setTimeout(function() { el.classList.add('gone'); }, 450);
+  }
+  setTimeout(function() {
+    var popup = document.getElementById('welcomePopup');
+    if (popup) popup.classList.add('visible');
+  }, 300);
+
   init();
 </script>
+
 </body>
 </html>
