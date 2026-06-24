@@ -672,9 +672,7 @@
     .card-cat { font-size:10px; }
     .price-break { display:block; height:0; }
   }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
-  }
+  /* prefers-reduced-motion removed — animations always enabled */
 
   /* ── Welcome Popup ── */
   #welcomePopup {
