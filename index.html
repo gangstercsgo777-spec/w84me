@@ -925,8 +925,8 @@
 
 <div id="toast"></div>
 <script>
-  const SUPABASE_URL = 'https://dgkxehuffqqdcewlcqgt.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_ol0jPCPCkojB_KvkZT-HTA_xXpKW3JJ';
+  const SUPABASE_URL = 'https://fehtewejnzpzxzghqewm.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_j-vdId3ZjKDVqUXosPSAQw_Kq2eUu6D';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const CATEGORIES = ["T-Shirts","Hoodies","Pants","Jeans","Shorts","Shoes","Puffers","Accessories","Room Decor","Longsleeve","Tracksuit","Sweater","Jacket"];
   const INVITE_CODE = 'IFIGEUGZV';
@@ -1136,35 +1136,46 @@
 
   /* ── Live online-users count (Supabase Realtime Presence) ── */
   function initPresence() {
-    var clientId = sessionStorage.getItem('tuffClientId');
-    if (!clientId) {
-      clientId = Math.random().toString(36).slice(2) + Date.now().toString(36);
-      sessionStorage.setItem('tuffClientId', clientId);
-    }
-    var channel = sb.channel('online-users', { config: { presence: { key: clientId } } });
-    channel.on('presence', { event: 'sync' }, function () {
-      var state = channel.presenceState();
-      var count = Object.keys(state).length;
-      var el = document.getElementById('onlineCount');
-      if (el) el.textContent = count;
-    });
-    channel.subscribe(async function (status) {
-      if (status === 'SUBSCRIBED') {
-        await channel.track({ online_at: new Date().toISOString() });
+    try {
+      var clientId = sessionStorage.getItem('tuffClientId');
+      if (!clientId) {
+        clientId = Math.random().toString(36).slice(2) + Date.now().toString(36);
+        sessionStorage.setItem('tuffClientId', clientId);
       }
-    });
+      var channel = sb.channel('online-users', { config: { presence: { key: clientId } } });
+      channel.on('presence', { event: 'sync' }, function () {
+        try {
+          var state = channel.presenceState();
+          var count = Object.keys(state).length;
+          var el = document.getElementById('onlineCount');
+          if (el) el.textContent = count;
+        } catch(e) {}
+      });
+      channel.subscribe(function (status) {
+        if (status === 'SUBSCRIBED') {
+          channel.track({ online_at: new Date().toISOString() }).catch(function(){});
+        }
+      });
+    } catch(e) { console.warn('initPresence failed:', e); }
   }
 
   async function init() {
-    const { data } = await sb.auth.getSession();
-    isAdmin = !!data.session;
+    try {
+      const { data } = await sb.auth.getSession();
+      isAdmin = !!data.session;
+    } catch(e) { isAdmin = false; }
     applyAdminState();
     buildCategoryUI();
     populateCategorySelect();
-    initPresence();
-    fetchSiteVisits24h();
-    recordSiteVisit();
-    await Promise.all([fetchAllProductViews(), reload()]);
+    // Defer non-critical tasks so products load first
+    setTimeout(function() {
+      try { initPresence(); } catch(e) {}
+      try { fetchSiteVisits24h(); } catch(e) {}
+      try { recordSiteVisit(); } catch(e) {}
+    }, 1500);
+    // Load products — fetchAllProductViews is non-critical, never block on it
+    fetchAllProductViews().catch(function(){});
+    await reload();
   }
 
   function buildCategoryUI() {
