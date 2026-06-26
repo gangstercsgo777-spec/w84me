@@ -674,118 +674,338 @@
   }
   /* prefers-reduced-motion removed — animations always enabled */
 
-  /* ── Welcome Popup ── */
-  #welcomePopup {
-    position: fixed; inset: 0; z-index: 500;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-    background: rgba(0,0,0,0);
-    backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px);
-    transition: background 400ms cubic-bezier(0.4, 0.0, 0.2, 1), backdrop-filter 400ms cubic-bezier(0.4, 0.0, 0.2, 1), -webkit-backdrop-filter 400ms cubic-bezier(0.4, 0.0, 0.2, 1);
-    pointer-events: none;
+  /* ── Linktree Intro Overlay ── */
+  @keyframes ltFadeUp {
+    0%   { opacity: 0; transform: translateY(22px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
-  #welcomePopup.visible {
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    pointer-events: all;
+  @keyframes ltPulseGlow {
+    0%,100% { box-shadow: 0 0 0 1px rgba(255,107,0,0.25), 0 0 40px rgba(255,107,0,0.12); }
+    50%      { box-shadow: 0 0 0 1px rgba(255,107,0,0.5),  0 0 70px rgba(255,107,0,0.28); }
   }
-  #welcomePopup.hiding {
-    background: rgba(0,0,0,0) !important;
-    backdrop-filter: blur(0px) !important; -webkit-backdrop-filter: blur(0px) !important;
-    pointer-events: none;
+  @keyframes ltAvatarRing {
+    0%,100% { box-shadow: 0 0 0 2px rgba(255,107,0,0.4), 0 0 28px rgba(255,107,0,0.2); }
+    50%      { box-shadow: 0 0 0 3px rgba(255,107,0,0.7), 0 0 50px rgba(255,107,0,0.38); }
   }
-  @keyframes welcomeGlow {
-    0%,100% { box-shadow: 0 0 0 1px rgba(255,107,0,0.2), 0 0 60px rgba(255,107,0,0.15), 0 40px 80px rgba(0,0,0,0.7); }
-    50%      { box-shadow: 0 0 0 1px rgba(255,107,0,0.45), 0 0 100px rgba(255,107,0,0.35), 0 40px 80px rgba(0,0,0,0.7); }
+  @keyframes ltOnlinePing {
+    0%   { box-shadow: 0 0 0 0   rgba(52,211,153,.6); }
+    70%  { box-shadow: 0 0 0 6px rgba(52,211,153,0);  }
+    100% { box-shadow: 0 0 0 0   rgba(52,211,153,0);  }
   }
-  .welcome-card {
-    position: relative;
-    background: #111;
-    border: 1px solid rgba(255,107,0,0.35);
-    border-radius: 24px;
-    padding: 48px 36px 36px;
-    max-width: 400px; width: 100%;
-    text-align: center;
-    box-shadow: 0 0 0 1px rgba(255,107,0,0.2), 0 0 60px rgba(255,107,0,0.15), 0 40px 80px rgba(0,0,0,0.7);
-    transform: translateY(36px) scale(0.93);
+
+  #ltOverlay {
+    position: fixed; inset: 0; z-index: 900;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 70% 55% at 50% -10%, rgba(255,107,0,.16) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 110%, rgba(255,107,0,.10) 0%, transparent 55%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    transition: opacity 500ms cubic-bezier(0.4,0,1,1), transform 500ms cubic-bezier(0.4,0,1,1);
+  }
+  #ltOverlay.hiding {
     opacity: 0;
-    transition: transform 500ms cubic-bezier(0.0, 0.0, 0.2, 1), opacity 400ms cubic-bezier(0.0, 0.0, 0.2, 1);
+    pointer-events: none;
+    transform: scale(1.03);
   }
-  #welcomePopup.visible .welcome-card {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-    animation: welcomeGlow 3s 1s ease-in-out infinite;
+  #ltOverlay.gone { display: none !important; }
+
+  .lt-page {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  #welcomePopup.hiding .welcome-card {
-    transform: translateY(20px) scale(0.95) !important;
-    opacity: 0 !important;
-    animation: none !important;
-    transition: transform 300ms cubic-bezier(0.4, 0.0, 1, 1), opacity 250ms cubic-bezier(0.4, 0.0, 1, 1) !important;
+
+  .lt-avatar-wrap {
+    margin-bottom: 20px;
+    animation: ltFadeUp 0.5s 0.05s cubic-bezier(0.0,0.0,0.2,1) both;
   }
-  .welcome-close {
-    position: absolute; top: 14px; right: 14px;
-    width: 36px; height: 36px;
-    background: rgba(255,255,255,0.07);
-    border: 1.5px solid rgba(255,255,255,0.15);
-    border-radius: 50%;
-    color: #fff; font-size: 20px; line-height: 1;
-    cursor: pointer;
+  .lt-avatar {
+    width: 72px; height: 72px;
+    background: var(--accent);
+    border-radius: 20px;
     display: flex; align-items: center; justify-content: center;
-    transition: background 200ms cubic-bezier(0.4,0,0.2,1), border-color 200ms cubic-bezier(0.4,0,0.2,1), color 200ms ease, transform 300ms cubic-bezier(0.0,0.0,0.2,1);
+    font-family: var(--font-mono);
+    font-size: 22px; font-weight: 700;
+    color: #000; letter-spacing: -0.02em;
+    animation: ltAvatarRing 3s ease-in-out infinite;
   }
-  .welcome-close:hover {
-    background: rgba(255,107,0,0.2);
-    border-color: rgba(255,107,0,0.7);
-    color: #ff6b00;
-    transform: rotate(90deg) scale(1.1);
+
+  .lt-handle-section {
+    text-align: center;
+    margin-bottom: 28px;
+    margin-top: 8px;
+    animation: ltFadeUp 0.5s 0.1s cubic-bezier(0.0,0.0,0.2,1) both;
   }
-  .welcome-close:active { transform: rotate(90deg) scale(0.9); }
-  .welcome-emoji { font-size: 44px; margin-bottom: 18px; display: block; }
-  .welcome-title {
-    font-size: 24px; font-weight: 700;
-    letter-spacing: -0.03em; line-height: 1.2;
-    color: #fff; margin-bottom: 12px;
+  .lt-handle {
+    font-size: 20px; font-weight: 700;
+    letter-spacing: -0.03em; color: var(--text);
+    margin-bottom: 6px;
   }
-  .welcome-title span { color: #ff6b00; }
-  .welcome-desc {
-    font-size: 14px; color: #777;
-    line-height: 1.65; margin-bottom: 28px;
+  .lt-handle-sub {
+    font-size: 13.5px; color: var(--text-muted);
+    font-weight: 400;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
   }
-  .welcome-desc strong { color: #ccc; font-weight: 600; }
-  .welcome-cta {
-    display: block; width: 100%;
-    padding: 15px 0;
-    background: #ff6b00; color: #000;
-    border: none; border-radius: 12px;
-    font-family: var(--font-display);
-    font-size: 15px; font-weight: 700;
-    text-align: center; text-decoration: none; cursor: pointer;
-    letter-spacing: -0.01em;
-    box-shadow: 0 0 24px rgba(255,107,0,0.35);
-    transition: background 200ms cubic-bezier(0.4,0,0.2,1), box-shadow 300ms cubic-bezier(0.0,0.0,0.2,1), transform 250ms cubic-bezier(0.0,0.0,0.2,1);
+  .lt-live-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #34d399; flex-shrink: 0;
+    animation: ltOnlinePing 2.2s ease-out infinite;
   }
-  .welcome-cta:hover { background: #ff8533; box-shadow: 0 0 44px rgba(255,107,0,0.55); transform: translateY(-2px); }
-  .welcome-cta:active { transform: scale(0.97); }
-  .welcome-skip {
-    display: block; margin-top: 18px;
-    font-size: 12px; color: #444;
-    background: none; border: none;
+
+  .lt-links {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .lt-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 15px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--text);
+    cursor: pointer;
+    transition: transform 300ms cubic-bezier(0.0,0.0,0.2,1), border-color 300ms ease, box-shadow 300ms ease, background 200ms ease;
+    position: relative; overflow: hidden;
+  }
+  .lt-card:nth-child(1) { animation: ltFadeUp 0.5s 0.18s cubic-bezier(0.0,0.0,0.2,1) both; }
+  .lt-card:nth-child(2) { animation: ltFadeUp 0.5s 0.26s cubic-bezier(0.0,0.0,0.2,1) both; }
+  .lt-card:nth-child(3) { animation: ltFadeUp 0.5s 0.34s cubic-bezier(0.0,0.0,0.2,1) both; }
+
+  .lt-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,107,0,0.45);
+    box-shadow: 0 0 0 1px rgba(255,107,0,0.2), 0 10px 28px rgba(0,0,0,0.4), 0 0 24px rgba(255,107,0,0.1);
+    background: var(--surface2);
+  }
+  .lt-card:active { transform: translateY(-1px) scale(0.98); transition-duration: 70ms; }
+
+  .lt-card.primary {
+    border-color: rgba(255,107,0,0.4);
+    background: rgba(255,107,0,0.07);
+  }
+  /* Glow lives on ::before so hover never touches the animating element */
+  .lt-card.primary::before {
+    content: '';
+    position: absolute; inset: -1px;
+    border-radius: 17px;
+    pointer-events: none;
+    z-index: 0;
+    box-shadow: 0 0 0 1px rgba(255,107,0,0.25), 0 0 40px rgba(255,107,0,0.12);
+    animation: ltPulseGlow 3.5s 0.7s ease-in-out infinite;
+    transition: opacity 300ms ease;
+  }
+  .lt-card.primary:hover::before { opacity: 0; }
+  .lt-card.primary:hover {
+    border-color: rgba(255,107,0,0.65);
+    box-shadow: 0 0 0 1px rgba(255,107,0,0.35), 0 12px 32px rgba(0,0,0,0.5), 0 0 44px rgba(255,107,0,0.18);
+  }
+  .lt-card.primary .lt-title { color: var(--accent); }
+
+  .lt-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 20px;
+    position: relative; z-index: 1;
+  }
+  .lt-icon.orange { background: rgba(255,107,0,0.18); border: 1px solid rgba(255,107,0,0.3); }
+  .lt-icon.tiktok { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+  .lt-icon.youtube { background: rgba(255,0,0,0.12); border: 1px solid rgba(255,0,0,0.22); }
+  .lt-icon.sheet { background: rgba(255,107,0,0.1); border: 1px solid rgba(255,107,0,0.2); }
+
+  .lt-text { flex: 1; min-width: 0; position: relative; z-index: 1; }
+  .lt-title {
+    font-size: 14.5px; font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.25;
+    margin-bottom: 2px;
+  }
+  .lt-sub {
+    font-size: 11.5px; color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .lt-arrow {
+    color: var(--text-muted); flex-shrink: 0;
+    position: relative; z-index: 1;
+    transition: transform 250ms cubic-bezier(0.0,0.0,0.2,1), color 200ms ease;
+  }
+  .lt-card:hover .lt-arrow { transform: translateX(3px); color: var(--text); }
+  .lt-card.primary:hover .lt-arrow { color: var(--accent); }
+
+  /* spreadsheet entry button */
+  @keyframes ltShimmer {
+    0%   { transform: translateX(-100%) skewX(-15deg); }
+    100% { transform: translateX(250%) skewX(-15deg); }
+  }
+  @keyframes ltEnterGlow {
+    0%,100% { box-shadow: 0 0 0 1px rgba(255,107,0,0.2), 0 4px 20px rgba(0,0,0,0.3); }
+    50%      { box-shadow: 0 0 0 1px rgba(255,107,0,0.45), 0 4px 28px rgba(0,0,0,0.4), 0 0 32px rgba(255,107,0,0.12); }
+  }
+  .lt-enter-btn {
+    display: flex; align-items: center; gap: 14px;
+    width: 100%;
+    padding: 15px 18px;
+    background: linear-gradient(135deg, #111 0%, #161616 100%);
+    border: 1px solid rgba(255,107,0,0.35);
+    border-radius: 16px;
+    color: var(--text);
     font-family: var(--font-display);
     cursor: pointer;
-    text-align: center; width: 100%;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-color: transparent;
-    transition: color 0.15s, text-decoration-color 0.2s;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    transition: transform 300ms cubic-bezier(0.0,0.0,0.2,1), border-color 300ms ease, box-shadow 300ms ease, background 200ms ease;
+    animation: ltFadeUp 0.5s 0.22s cubic-bezier(0.0,0.0,0.2,1) both;
+    margin-top: 2px;
+    position: relative; overflow: hidden;
+    text-align: left;
   }
-  .welcome-skip:hover { color: #777; text-decoration-color: #444; }
-  #welcomePopup.gone { display: none !important; }
+  /* Glow on ::after — never touched by hover, never restarts */
+  .lt-enter-btn::after {
+    content: '';
+    position: absolute; inset: -1px;
+    border-radius: 17px;
+    pointer-events: none;
+    animation: ltEnterGlow 3.5s 1.2s ease-in-out infinite;
+    transition: opacity 300ms ease;
+    z-index: 0;
+  }
+  /* Shimmer on ::before — also isolated */
+  .lt-enter-btn::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 40%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,107,0,0.11), transparent);
+    animation: ltShimmer 2.8s 1.5s ease-in-out infinite;
+    transition: opacity 200ms ease;
+    z-index: 0;
+  }
+  .lt-enter-btn:hover::after,
+  .lt-enter-btn:hover::before { opacity: 0; }
+  .lt-enter-btn:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,107,0,0.65);
+    box-shadow: 0 0 0 1px rgba(255,107,0,0.35), 0 12px 32px rgba(0,0,0,0.5), 0 0 44px rgba(255,107,0,0.18);
+    background: linear-gradient(135deg, rgba(255,107,0,0.1) 0%, rgba(255,107,0,0.05) 100%);
+  }
+  .lt-enter-btn:active { transform: translateY(-1px) scale(0.98); transition-duration: 70ms; }
+
+  .lt-enter-logo {
+    width: 42px; height: 42px;
+    background: var(--accent);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 700;
+    color: #000; letter-spacing: 0;
+    flex-shrink: 0;
+    position: relative; z-index: 1;
+  }
+  .lt-enter-text {
+    flex: 1; min-width: 0;
+    position: relative; z-index: 1;
+  }
+  .lt-enter-title {
+    font-size: 14.5px; font-weight: 700;
+    letter-spacing: -0.02em; line-height: 1.25;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .lt-enter-sub {
+    font-size: 11.5px; color: var(--text-muted);
+    font-weight: 500;
+  }
+  .lt-enter-arrow {
+    color: var(--text-muted); flex-shrink: 0;
+    position: relative; z-index: 1;
+    transition: transform 250ms cubic-bezier(0.0,0.0,0.2,1), color 200ms ease;
+  }
+  .lt-enter-btn:hover .lt-enter-arrow { transform: translateX(3px); color: var(--accent); }
+
+  @media (max-width: 480px) {
+    #ltOverlay { padding: 32px 16px; align-items: flex-start; padding-top: 56px; }
+    .lt-card { padding: 13px 14px; }
+    .lt-icon { width: 38px; height: 38px; font-size: 18px; }
+    .lt-title { font-size: 13.5px; }
+  }
+
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+<!-- ── Linktree Intro Overlay ── -->
+<div id="ltOverlay">
+  <div class="lt-page">
+
+    <div class="lt-handle-section">
+      <div class="lt-handle">w84me's stuff</div>
+    </div>
+
+    <div class="lt-links">
+
+      <!-- LitBuy -->
+      <a class="lt-card primary" href="https://litbuy.com/register?inviteCode=W84ME" target="_blank" rel="noopener">
+        <div class="lt-icon orange">🔥</div>
+        <div class="lt-text">
+          <div class="lt-title">Get $500 in coupons + 70% off shipping on LitBuy</div>
+          <div class="lt-sub">Register on LitBuy — completely free to join</div>
+        </div>
+        <svg class="lt-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+
+      <!-- Enter spreadsheet — right below LitBuy -->
+      <button class="lt-enter-btn" onclick="closeLtOverlay()">
+        <div class="lt-enter-logo">TT</div>
+        <div class="lt-enter-text">
+          <div class="lt-enter-title">🔥 Browse the best LitBuy Spreadsheet</div>
+          <div class="lt-enter-sub">Browse through 1000+ unique finds and daily updates!</div>
+        </div>
+        <svg class="lt-enter-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+
+      <!-- TikTok -->
+      <a class="lt-card" href="https://www.tiktok.com/@w84me48/" target="_blank" rel="noopener">
+        <div class="lt-icon tiktok">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>
+        </div>
+        <div class="lt-text">
+          <div class="lt-title">Follow me on TikTok</div>
+          <div class="lt-sub">@w84me48</div>
+        </div>
+        <svg class="lt-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+
+      <!-- YouTube -->
+      <a class="lt-card" href="https://www.youtube.com/@w84me48" target="_blank" rel="noopener">
+        <div class="lt-icon youtube">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.6 12 3.6 12 3.6s-7.54 0-9.38.45A3.02 3.02 0 0 0 .5 6.19C.06 8.04 0 12 0 12s.06 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.4 12 20.4 12 20.4s7.54 0 9.38-.45a3.02 3.02 0 0 0 2.12-2.14C23.94 15.96 24 12 24 12s-.06-3.96-.5-5.81zM9.75 15.52V8.48L15.87 12l-6.12 3.52z"/></svg>
+        </div>
+        <div class="lt-text">
+          <div class="lt-title">Subscribe on YouTube</div>
+          <div class="lt-sub">@w84me48</div>
+        </div>
+        <svg class="lt-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+
+    </div>
+  </div>
+</div>
+<!-- ── End Linktree Intro ── -->
+
 <div id="editBanner">&#9999;&#65039; Edit mode &mdash; click &times; on any card to remove it. Click &ldquo;Done&rdquo; when finished.</div>
 <header>
   <div class="brand">
@@ -907,21 +1127,7 @@
 
 </a>
 
-<!-- Welcome Popup -->
-<div id="welcomePopup">
-  <div class="welcome-card">
-    <button class="welcome-close" onclick="closeWelcome()" aria-label="Close">&times;</button>
-    <span class="welcome-emoji">🛍️</span>
-    <div class="welcome-title">Get <span>$500 in coupons</span><br>+ 70% off shipping</div>
-    <div class="welcome-desc">
-      Register on <strong>LitBuy</strong> to unlock exclusive discounts on every product in this spreadsheet — completely free to join.
-    </div>
-    <a class="welcome-cta" href="https://litbuy.com/register?inviteCode=W84ME" target="_blank" rel="noopener" onclick="closeWelcome()">
-      Claim my discount on LitBuy →
-    </a>
-    <button class="welcome-skip" onclick="closeWelcome()">I'll check it out later, take me to the spreadsheet</button>
-  </div>
-</div>
+
 
 <div id="toast"></div>
 <script>
@@ -1520,18 +1726,15 @@
   }
 
 
-  // Welcome popup
-  function closeWelcome() {
-    var el = document.getElementById('welcomePopup');
+
+
+  // Linktree intro overlay
+  function closeLtOverlay() {
+    var el = document.getElementById('ltOverlay');
     if (!el) return;
-    el.classList.remove('visible');
     el.classList.add('hiding');
-    setTimeout(function() { el.classList.add('gone'); }, 450);
+    setTimeout(function() { el.classList.add('gone'); }, 520);
   }
-  setTimeout(function() {
-    var popup = document.getElementById('welcomePopup');
-    if (popup) popup.classList.add('visible');
-  }, 300);
 
   init();
 </script>
