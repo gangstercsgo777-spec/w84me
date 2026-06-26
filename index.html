@@ -779,9 +779,11 @@
     transition: transform 300ms cubic-bezier(0.0,0.0,0.2,1), border-color 300ms ease, box-shadow 300ms ease, background 200ms ease;
     position: relative; overflow: hidden;
   }
-  .lt-card:nth-child(1) { animation: ltFadeUp 0.5s 0.18s cubic-bezier(0.0,0.0,0.2,1) both; }
-  .lt-card:nth-child(2) { animation: ltFadeUp 0.5s 0.26s cubic-bezier(0.0,0.0,0.2,1) both; }
-  .lt-card:nth-child(3) { animation: ltFadeUp 0.5s 0.34s cubic-bezier(0.0,0.0,0.2,1) both; }
+  .lt-card.anim-1 { animation: ltFadeUp 0.5s 0.18s cubic-bezier(0.0,0.0,0.2,1) both; }
+  .lt-card.anim-2 { animation: ltFadeUp 0.5s 0.34s cubic-bezier(0.0,0.0,0.2,1) both; }
+  .lt-card.anim-3 { animation: ltFadeUp 0.5s 0.42s cubic-bezier(0.0,0.0,0.2,1) both; }
+  /* primary overrides anim-1 on the card itself — glow stays on ::before */
+  .lt-card.primary.anim-1 { animation: ltFadeUp 0.5s 0.18s cubic-bezier(0.0,0.0,0.2,1) both; }
 
   .lt-card:hover {
     transform: translateY(-3px);
@@ -958,7 +960,7 @@
     <div class="lt-links">
 
       <!-- LitBuy -->
-      <a class="lt-card primary" href="https://litbuy.com/register?inviteCode=W84ME" target="_blank" rel="noopener">
+      <a class="lt-card primary anim-1" href="https://litbuy.com/register?inviteCode=W84ME" target="_blank" rel="noopener">
         <div class="lt-icon orange">🔥</div>
         <div class="lt-text">
           <div class="lt-title">Get $500 in coupons + 70% off shipping on LitBuy</div>
@@ -971,14 +973,14 @@
       <button class="lt-enter-btn" onclick="closeLtOverlay()">
         <div class="lt-enter-logo">TT</div>
         <div class="lt-enter-text">
-          <div class="lt-enter-title">🔥 Browse the best LitBuy Spreadsheet</div>
+          <div class="lt-enter-title">🔥 Browse the best Litbuy Spreadsheet</div>
           <div class="lt-enter-sub">Browse through 1000+ unique finds and daily updates!</div>
         </div>
         <svg class="lt-enter-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
 
       <!-- TikTok -->
-      <a class="lt-card" href="https://www.tiktok.com/@w84me48/" target="_blank" rel="noopener">
+      <a class="lt-card anim-2" href="https://www.tiktok.com/@w84me48/" target="_blank" rel="noopener">
         <div class="lt-icon tiktok">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>
         </div>
@@ -990,7 +992,7 @@
       </a>
 
       <!-- YouTube -->
-      <a class="lt-card" href="https://www.youtube.com/@w84me48" target="_blank" rel="noopener">
+      <a class="lt-card anim-3" href="https://www.youtube.com/@w84me48" target="_blank" rel="noopener">
         <div class="lt-icon youtube">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.6 12 3.6 12 3.6s-7.54 0-9.38.45A3.02 3.02 0 0 0 .5 6.19C.06 8.04 0 12 0 12s.06 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.4 12 20.4 12 20.4s7.54 0 9.38-.45a3.02 3.02 0 0 0 2.12-2.14C23.94 15.96 24 12 24 12s-.06-3.96-.5-5.81zM9.75 15.52V8.48L15.87 12l-6.12 3.52z"/></svg>
         </div>
