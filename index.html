@@ -179,8 +179,8 @@
   #loginHint { background: none; border: none; cursor: pointer; padding: 6px; color: var(--ink-soft); display: flex; align-items: center; border-radius: 50%; }
   #loginHint:hover { color: var(--accent); background: var(--accent-soft); }
 
-  main { width: 100%; margin: 0; padding: 0; display: flex; gap: 0; align-items: flex-start; }
-  .content { flex: 1; min-width: 0; width: 100%; }
+  main { width: 100%; margin: 0; padding: 0; display: flex; gap: 0; align-items: flex-start; justify-content: center; }
+  .content { flex: 1; min-width: 0; width: 100%; max-width: 1320px; }
   .section-title { font-family: var(--font-title); font-size: 22px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); border-bottom: none; padding: 30px 28px 6px; margin: 0; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
   #countLabel { font-family: var(--font-ui); font-size: 13px; color: var(--ink-soft); font-weight: 500; }
 
@@ -245,9 +245,10 @@
   .card-edit { position: absolute; top: 8px; left: 8px; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border: none; color: var(--ink-soft); cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 4; box-shadow: 0 4px 10px rgba(30,30,60,0.15); }
   .card-edit:hover { color: #fff; background: var(--accent); }
   .edit-mode .card-delete, .edit-mode .card-edit { display: flex; }
-  #empty { grid-column: 1/-1; text-align: center; padding: 60px 0; color: var(--ink-soft); }
+  #empty { grid-column: 1/-1; text-align: center; padding: 70px 32px; color: var(--ink-soft); background: var(--glass-strong); backdrop-filter: blur(16px) saturate(180%); border: 1px solid rgba(255,255,255,0.7); border-radius: var(--radius-lg); box-shadow: 0 4px 20px rgba(30,30,60,0.06); max-width: 380px; margin: 40px auto; }
   #empty p { font-size: 13px; margin-top: 8px; font-family: var(--font-ui); }
   #empty strong { display: block; font-size: 17px; color: var(--ink); margin-bottom: 6px; font-family: var(--font-title); font-weight: 700; }
+  .empty-icon { width: 56px; height: 56px; margin: 0 auto 16px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; }
   .loading-spinner { width: 32px; height: 32px; border: 3px solid rgba(10,132,255,0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
   .overlay { position: fixed; inset: 0; background: rgba(20,20,30,0.35); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
   .overlay.open { display: flex; animation: fadeOverlay 0.2s ease both; }
@@ -460,7 +461,12 @@
 <script>
   const SUPABASE_URL = 'https://fehtewejnzpzxzghqewm.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_j-vdId3ZjKDVqUXosPSAQw_Kq2eUu6D';
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let sb = null;
+  try {
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch (e) {
+    console.warn('Supabase failed to load, running in offline mode:', e);
+  }
   const CATEGORIES = ["T-Shirts","Hoodies","Pants","Jeans","Shorts","Shoes","Puffers","Accessories","Room Decor","Longsleeve","Tracksuit","Sweater","Jacket"];
   const INVITE_CODE = 'dNNSBt';
   let editMode = false, imageDataURL = null, editingId = null;
@@ -468,6 +474,7 @@
   let activeSort = 'newest';
   let isAdmin = false;
   let cachedProducts = [];
+  let productsLoaded = false;
   let categoryAutoFilled = true;
   let pinnedIds = JSON.parse(localStorage.getItem('tuff_pinned') || '[]');
 
@@ -688,11 +695,14 @@
   }
 
   async function init() {
-    const { data } = await sb.auth.getSession();
-    isAdmin = !!data.session;
-    applyAdminState();
     buildCategoryUI();
     populateCategorySelect();
+    if (!sb) { render(); return; }
+    try {
+      const { data } = await sb.auth.getSession();
+      isAdmin = !!data.session;
+    } catch (e) { console.warn('auth session check failed:', e); }
+    applyAdminState();
     initPresence();
     fetchSiteVisits24h();
     recordSiteVisit();
@@ -798,6 +808,7 @@
 
   async function reload(filter) {
     cachedProducts = await load();
+    productsLoaded = true;
     render(filter);
   }
 
@@ -841,7 +852,12 @@
     grid.innerHTML = '';
     if (!filtered.length) {
       const el = document.createElement('div'); el.id = 'empty';
-      el.innerHTML = q ? '<strong>No results</strong><p>Try a different search.</p>' : '<div class="loading-spinner"></div><strong>Products loading...</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>';
+      const icon = '<svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>';
+      el.innerHTML = q
+        ? '<div class="empty-icon">' + icon + '</div><strong>No results</strong><p>Try a different search.</p>'
+        : (productsLoaded
+            ? '<div class="empty-icon">' + icon + '</div><strong>' + (activeCategory ? 'Nothing here yet' : 'No products yet') + '</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>'
+            : '<div class="loading-spinner"></div><strong>Products loading&hellip;</strong><p>Please wait a moment.</p>');
       grid.appendChild(el); return;
     }
     filtered.forEach(function(p) {
