@@ -338,11 +338,12 @@
   .converter-status.ok { color: #30d158; }
   .converter-status.err { color: #ff3b30; }
 
-  .site-footer { background: #111; color: rgba(255,255,255,0.55); padding: 40px 28px 60px; font-size: 12px; line-height: 1.7; max-width: 900px; margin: 0 auto; }
-  .site-footer p { margin-bottom: 16px; }
+  .site-footer { background: transparent; padding: 50px 28px 70px; max-width: 900px; margin: 0 auto; }
+  .site-footer-card { background: var(--glass-strong); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255,255,255,0.6); border-radius: var(--radius-lg); padding: 32px 30px; box-shadow: 0 4px 20px rgba(30,30,60,0.06); }
+  .site-footer p { font-size: 12.5px; line-height: 1.7; color: var(--ink-soft); margin-bottom: 16px; }
   .site-footer p:last-child { margin-bottom: 0; }
-  .site-footer strong { color: rgba(255,255,255,0.85); font-weight: 700; }
-  @media (max-width: 640px) { .site-footer { padding: 32px 20px 48px; font-size: 11.5px; } }
+  .site-footer strong { color: var(--ink); font-weight: 700; }
+  @media (max-width: 640px) { .site-footer { padding: 36px 16px 56px; } .site-footer-card { padding: 24px 20px; } }
 
 </style>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -388,7 +389,7 @@
     <a class="intro-cta" href="https://www.bbdbuy.com/register?inviteCode=dNNSBt" target="_blank" rel="noopener">
       Sign up to BBDBuy &middot; $9/kg shipping
     </a>
-    <div class="intro-pick-label">Pick a category to start finding products</div>
+    <div class="intro-pick-label">Pick a category to find your items!</div>
     <div class="intro-cats" id="introCats"></div>
   </div>
 </section>
@@ -417,10 +418,12 @@
 </main>
 
 <footer class="site-footer">
-  <p><strong>w84me.space</strong> is not affiliated with Weidian.com, Taobao.com, 1688.com, tmall.com or any other shopping site ("platforms"). This website is not an official offer of those platforms.</p>
-  <p>All BBDBuy links are affiliate links. This includes the price tag buttons, *-tagged links and the links embedded in images. We do not get a commission for the sale of the item, only for their function as a freight forwarder.</p>
-  <p>We are not an online store and do not sell any products and is in no way associated with the BBDBuy website or brand. Our website is designed solely to help you find products available on BBDBuy.</p>
-  <p>Please be aware that this website contains affiliate links.<br>This means that if you make a purchase through these links, we may earn a small commission.<br>This commission helps us maintain and improve our website at no extra cost to you. We appreciate your support!</p>
+  <div class="site-footer-card">
+    <p><strong>w84me.space</strong> is not affiliated with Weidian.com, Taobao.com, 1688.com, tmall.com or any other shopping site ("platforms"). This website is not an official offer of those platforms.</p>
+    <p>All BBDBuy links are affiliate links. This includes the price tag buttons, *-tagged links and the links embedded in images. We do not get a commission for the sale of the item, only for their function as a freight forwarder.</p>
+    <p>We are not an online store and do not sell any products and is in no way associated with the BBDBuy website or brand. Our website is designed solely to help you find products available on BBDBuy.</p>
+    <p>Please be aware that this website contains affiliate links.<br>This means that if you make a purchase through these links, we may earn a small commission.<br>This commission helps us maintain and improve our website at no extra cost to you. We appreciate your support!</p>
+  </div>
 </footer>
 
 <!-- Add Product Modal -->
