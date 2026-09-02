@@ -120,14 +120,33 @@
   .views-badge { display: flex; align-items: center; gap: 6px; background: rgba(60,60,67,0.06); border: none; border-radius: 999px; color: var(--ink-soft); font-size: 11px; font-weight: 600; padding: 5px 11px; white-space: nowrap; flex-shrink: 0; }
   .views-badge svg { flex-shrink: 0; }
 
-  #bbdbuyPromo { position: fixed; bottom: 20px; right: 20px; z-index: 400; display: flex; align-items: center; gap: 10px; background: var(--glass-strong); backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255,255,255,0.6); border-radius: var(--radius); padding: 13px 18px; max-width: 300px; text-decoration: none; transition: transform var(--dur-med) ease, box-shadow var(--dur-med) ease; animation: promoSlideIn 0.5s 1s ease both; box-shadow: 0 12px 34px rgba(30,30,60,0.16); }
-  #bbdbuyPromo:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(10,132,255,0.2); }
-  #bbdbuyPromo:active { transform: scale(0.98); }
-  .promo-icon { font-size: 18px; flex-shrink: 0; }
-  .promo-text { font-size: 12px; font-weight: 600; letter-spacing: 0.01em; color: var(--ink); line-height: 1.35; font-family: var(--font-ui); }
-  .promo-text span { display: block; font-size: 11px; font-weight: 500; color: var(--accent); margin-top: 2px; }
-  #bbdbuyPromoClose { background: none; border: none; cursor: pointer; color: var(--ink-soft); padding: 2px 0 2px 4px; font-size: 16px; line-height: 1; flex-shrink: 0; }
-  #bbdbuyPromoClose:hover { color: var(--ink); }
+  /* Coupon popup — triggered when the product list enters view */
+  .coupon-overlay { position: fixed; inset: 0; z-index: 550; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(27,25,23,0.35); backdrop-filter: blur(8px); }
+  .coupon-overlay.open { display: flex; animation: fadeOverlay 0.25s ease both; }
+  .coupon-card {
+    position: relative; width: 100%; max-width: 400px;
+    background: var(--glass-strong); backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: var(--radius-lg); padding: 36px 30px 28px; text-align: center;
+    box-shadow: 0 30px 80px rgba(30,30,60,0.22);
+    animation: slideUp 0.35s ease both;
+    overflow: hidden;
+  }
+  .coupon-card::before {
+    content: ''; position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(10,132,255,0.18), transparent 70%); pointer-events: none;
+  }
+  .coupon-close { position: absolute; top: 16px; right: 16px; background: rgba(60,60,67,0.08); border: none; color: var(--ink-soft); font-size: 16px; cursor: pointer; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.15s; z-index: 1; }
+  .coupon-close:hover { color: var(--ink); background: rgba(60,60,67,0.16); }
+  .coupon-eyebrow { position: relative; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  .coupon-headline { position: relative; font-family: var(--font-title); font-size: 32px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); line-height: 1.15; }
+  .coupon-body { position: relative; font-size: 14px; line-height: 1.55; color: var(--ink-soft); margin-top: 14px; padding: 0 4px; }
+  .coupon-claim { position: relative; display: block; margin-top: 26px; width: 100%; background: linear-gradient(135deg, var(--accent), #5ac8fa); color: #fff; font-size: 14px; font-weight: 700; letter-spacing: 0.01em; text-decoration: none; padding: 15px 0; border-radius: 999px; box-shadow: 0 10px 26px rgba(10,132,255,0.32); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .coupon-claim:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(10,132,255,0.42); }
+  .coupon-claim:active { transform: scale(0.98); }
+  .coupon-later { position: relative; display: block; margin-top: 16px; background: none; border: none; color: var(--ink-soft); font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; padding: 4px; transition: color 0.15s; }
+  .coupon-later:hover { color: var(--ink); }
+
 
   .card-pin-badge { position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg, var(--accent), #5ac8fa); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; display: flex; align-items: center; gap: 4px; z-index: 2; box-shadow: 0 4px 10px rgba(10,132,255,0.3); }
   .edit-mode .card-pin-badge { right: 40px; }
@@ -234,7 +253,8 @@
   .card-body { padding: 14px 14px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; text-align: left; }
   .card-name { font-size: 14px; font-weight: 600; line-height: 1.35; color: var(--ink); word-break: break-word; font-family: var(--font-ui); }
   .card-cat { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
-  .card-bottom-row { margin-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 0; }
+  .card-meta-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card-bottom-row { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 8px; }
   .card-price { font-size: clamp(12px, 4.2vw, 15px); font-weight: 700; color: var(--ink); font-family: var(--font-ui); white-space: nowrap; }
   .price-break { display: none; }
   .card-btn { display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, var(--accent), #5ac8fa); color: #fff; border: none; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; font-family: var(--font-ui); cursor: pointer; text-align: center; text-decoration: none; transition: all var(--dur-med) ease; white-space: nowrap; box-shadow: 0 4px 12px rgba(10,132,255,0.28); }
@@ -318,6 +338,12 @@
   .converter-status.ok { color: #30d158; }
   .converter-status.err { color: #ff3b30; }
 
+  .site-footer { background: #111; color: rgba(255,255,255,0.55); padding: 40px 28px 60px; font-size: 12px; line-height: 1.7; max-width: 900px; margin: 0 auto; }
+  .site-footer p { margin-bottom: 16px; }
+  .site-footer p:last-child { margin-bottom: 0; }
+  .site-footer strong { color: rgba(255,255,255,0.85); font-weight: 700; }
+  @media (max-width: 640px) { .site-footer { padding: 32px 20px 48px; font-size: 11.5px; } }
+
 </style>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
@@ -390,6 +416,13 @@
   </div>
 </main>
 
+<footer class="site-footer">
+  <p><strong>w84me.space</strong> is not affiliated with Weidian.com, Taobao.com, 1688.com, tmall.com or any other shopping site ("platforms"). This website is not an official offer of those platforms.</p>
+  <p>All BBDBuy links are affiliate links. This includes the price tag buttons, *-tagged links and the links embedded in images. We do not get a commission for the sale of the item, only for their function as a freight forwarder.</p>
+  <p>We are not an online store and do not sell any products and is in no way associated with the BBDBuy website or brand. Our website is designed solely to help you find products available on BBDBuy.</p>
+  <p>Please be aware that this website contains affiliate links.<br>This means that if you make a purchase through these links, we may earn a small commission.<br>This commission helps us maintain and improve our website at no extra cost to you. We appreciate your support!</p>
+</footer>
+
 <!-- Add Product Modal -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="modal">
@@ -450,12 +483,17 @@
 </div>
 
 
-<!-- Floating BBDBuy Promo -->
-<a id="bbdbuyPromo" href="https://www.bbdbuy.com/register?inviteCode=dNNSBt" target="_blank" rel="noopener">
-  <span class="promo-icon">⚡</span>
-  <div class="promo-text">Register to BBDBuy and get $400 in coupons. 🎁<span>Tap to claim your discount →</span></div>
-  <button id="bbdbuyPromoClose" onclick="event.preventDefault();event.stopPropagation();this.parentElement.style.display='none'" title="Dismiss">&times;</button>
-</a>
+<!-- Coupon popup — shown once the product list scrolls into view -->
+<div class="coupon-overlay" id="couponOverlay" onclick="if(event.target===this) dismissCoupon()">
+  <div class="coupon-card">
+    <button class="coupon-close" onclick="dismissCoupon()" title="Close">&times;</button>
+    <div class="coupon-eyebrow">Exclusive Offer</div>
+    <div class="coupon-headline">$300 IN COUPONS</div>
+    <div class="coupon-body">Sign up to BBDBuy today and unlock up to $300 in welcome coupons, plus the lowest shipping rates guaranteed.</div>
+    <a class="coupon-claim" href="https://www.bbdbuy.com/register?inviteCode=dNNSBt" target="_blank" rel="noopener" onclick="dismissCoupon()">Claim $300 Coupon</a>
+    <button class="coupon-later" onclick="dismissCoupon()">Maybe later</button>
+  </div>
+</div>
 
 <div id="toast"></div>
 <script>
@@ -739,6 +777,7 @@
   function dismissIntro() {
     const el = document.getElementById('introScreen');
     if (el) { el.classList.add('hidden'); setTimeout(function(){ el.style.display = 'none'; }, 500); }
+    setupCouponTrigger();
   }
 
   function populateCategorySelect() {
@@ -874,7 +913,7 @@
       const editBtn = isAdmin ? '<button class="card-edit" onclick="openEditModal(&quot;' + p.id + '&quot;)" title="Edit"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' : '';
       const pinBtn = isAdmin ? '<button class="card-pin-btn' + (isPinned ? ' pinned' : '') + '" onclick="togglePin(&quot;' + p.id + '&quot;)" title="' + (isPinned ? 'Unpin product' : 'Pin to top') + '"><svg width="11" height="11" fill="' + (isPinned ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>' : '';
 
-      card.innerHTML = imgHTML + pinBadge + '<div class="card-body">' + catHTML + '<div class="card-name">' + esc(p.name) + '</div><div class="card-bottom-row">' + (priceHTML || '<div class="card-price"></div>') + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener" onclick="recordView(&quot;' + p.id + '&quot;)">BUY</a></div></div>' + delBtn + editBtn + pinBtn;
+      card.innerHTML = imgHTML + pinBadge + '<div class="card-body"><div class="card-meta-row">' + catHTML + '</div><div class="card-name">' + esc(p.name) + '</div><div class="card-bottom-row">' + (priceHTML || '<div class="card-price"></div>') + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener" onclick="recordView(&quot;' + p.id + '&quot;)">BUY</a></div></div>' + delBtn + editBtn + pinBtn;
       card.style.animation = 'none';
       card.style.opacity = '0';
       grid.appendChild(card);
@@ -1077,6 +1116,30 @@
   function toast(msg) {
     var el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
     clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2500);
+  }
+
+  /* Coupon popup: fires once per session when the product list scrolls into view */
+  function dismissCoupon() {
+    const el = document.getElementById('couponOverlay');
+    if (el) el.classList.remove('open');
+  }
+  let couponTriggerArmed = false;
+  function setupCouponTrigger() {
+    if (couponTriggerArmed) return;
+    couponTriggerArmed = true;
+    if (sessionStorage.getItem('bbdbuy_coupon_shown')) return;
+    const grid = document.getElementById('grid');
+    if (!grid || !('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          document.getElementById('couponOverlay').classList.add('open');
+          sessionStorage.setItem('bbdbuy_coupon_shown', '1');
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.15 });
+    observer.observe(grid);
   }
 
   init();
