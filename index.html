@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RM's Spreadsheet</title>
+<meta name="description" content="RepMania's Finds — a curated catalog of the best finds, ready to order through BBDBuy.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RepMania's Finds">
+<meta property="og:description" content="A curated catalog of the best finds, ready to order through BBDBuy — $9/kg shipping.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RepMania's Finds">
+<meta name="twitter:description" content="A curated catalog of the best finds, ready to order through BBDBuy — $9/kg shipping.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -338,6 +345,56 @@
   .converter-status.ok { color: #30d158; }
   .converter-status.err { color: #ff3b30; }
 
+  /* Wishlist / suggest header buttons */
+  #wishlistToggle, #suggestBtn { position: relative; }
+  #wishlistToggle.active { background: linear-gradient(135deg, #ff375f, #ff6482); color: #fff; }
+  #wishlistToggle svg { flex-shrink: 0; }
+  #wishlistCount { font-size: 11px; font-weight: 700; }
+  #wishlistToggle:not(.active) #wishlistCount { color: var(--ink-soft); }
+  @media (max-width: 640px) { #suggestBtn span { display: none; } #suggestBtn { padding: 9px 10px; } }
+
+  /* How it works strip */
+  .how-it-works { background: var(--glass); backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--line); }
+  .how-it-works summary { list-style: none; cursor: pointer; padding: 12px 28px; font-size: 12px; font-weight: 600; color: var(--ink-soft); display: flex; align-items: center; gap: 6px; user-select: none; }
+  .how-it-works summary::-webkit-details-marker { display: none; }
+  .how-chevron { transition: transform 0.2s ease; }
+  .how-it-works[open] .how-chevron { transform: rotate(180deg); }
+  .how-steps { display: flex; gap: 24px; padding: 4px 28px 22px; flex-wrap: wrap; }
+  .how-step { display: flex; gap: 12px; align-items: flex-start; flex: 1; min-width: 200px; }
+  .how-step-num { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #5ac8fa); color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .how-step strong { font-size: 13px; color: var(--ink); display: block; margin-bottom: 2px; }
+  .how-step p { font-size: 12px; color: var(--ink-soft); line-height: 1.4; }
+  @media (max-width: 640px) { .how-it-works summary { padding: 10px 16px; } .how-steps { padding: 2px 16px 18px; gap: 16px; } }
+
+  /* New badge */
+  .card-new-badge { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #30d158, #34c759); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 999px; z-index: 2; box-shadow: 0 4px 10px rgba(48,209,88,0.3); }
+  .edit-mode .card-new-badge { left: 40px; }
+
+  /* Wishlist heart button on card */
+  .card-heart { position: absolute; bottom: 8px; left: 8px; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border: none; color: var(--ink-soft); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 4; box-shadow: 0 4px 10px rgba(30,30,60,0.15); transition: all 0.15s ease; }
+  .card-heart:hover { transform: scale(1.08); }
+  .card-heart.active { color: #fff; background: linear-gradient(135deg, #ff375f, #ff6482); }
+  .card-heart.active svg { fill: currentColor; }
+
+  /* Image lightbox */
+  .card-img { cursor: zoom-in; }
+  .lightbox-overlay { position: fixed; inset: 0; z-index: 480; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(10,10,14,0.82); backdrop-filter: blur(10px); }
+  .lightbox-overlay.open { display: flex; animation: fadeOverlay 0.2s ease both; }
+  .lightbox-overlay img { max-width: 100%; max-height: 88vh; border-radius: var(--radius); box-shadow: 0 30px 80px rgba(0,0,0,0.5); animation: slideUp 0.25s ease both; }
+  .lightbox-close { position: absolute; top: 20px; right: 20px; width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.12); border: none; color: #fff; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+  .lightbox-close:hover { background: rgba(255,255,255,0.22); }
+
+  /* Skeleton loading cards */
+  .skeleton-card { border-radius: var(--radius); overflow: hidden; background: var(--glass-strong); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 4px 16px rgba(30,30,60,0.06); }
+  .skeleton-img { width: 100%; aspect-ratio: 1; background: linear-gradient(100deg, #e8ecf2 30%, #f4f6fa 50%, #e8ecf2 70%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+  .skeleton-line { height: 11px; border-radius: 6px; margin: 14px 14px 0; background: linear-gradient(100deg, #e8ecf2 30%, #f4f6fa 50%, #e8ecf2 70%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+  .skeleton-line.short { width: 40%; margin-top: 10px; margin-bottom: 16px; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* Suggest an item modal */
+  #suggestModal textarea { width: 100%; min-height: 90px; background: rgba(60,60,67,0.06); border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--ink); font-size: 14px; font-family: var(--font-ui); padding: 10px 13px; outline: none; resize: vertical; transition: border-color 0.15s, background 0.15s; }
+  #suggestModal textarea:focus { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(10,132,255,0.12); }
+
   .site-footer { background: transparent; padding: 50px 28px 70px; max-width: 900px; margin: 0 auto; }
   .site-footer-card { background: var(--glass-strong); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border: 1px solid rgba(255,255,255,0.6); border-radius: var(--radius-lg); padding: 32px 30px; box-shadow: 0 4px 20px rgba(30,30,60,0.06); }
   .site-footer p { font-size: 12.5px; line-height: 1.7; color: var(--ink-soft); margin-bottom: 16px; }
@@ -367,6 +424,14 @@
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input id="searchInput" type="text" placeholder="Search products&hellip;">
     </div>
+    <button id="wishlistToggle" class="btn btn-ghost" onclick="toggleWishlistView()" title="View wishlist">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+      <span id="wishlistCount">0</span>
+    </button>
+    <button id="suggestBtn" class="btn btn-ghost" onclick="openSuggestModal()" title="Suggest an item">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      <span>Suggest</span>
+    </button>
     <div id="adminControls">
       <button class="btn btn-ghost" id="editBtn" onclick="toggleEditMode()">Edit</button>
       <button class="btn btn-primary" onclick="openModal()" title="Add product">
@@ -389,7 +454,7 @@
     <a class="intro-cta" href="https://www.bbdbuy.com/register?inviteCode=dNNSBt" target="_blank" rel="noopener">
       Sign up to BBDBuy &middot; $9/kg shipping
     </a>
-    <div class="intro-pick-label">Pick a category to find your items!</div>
+    <div class="intro-pick-label">Pick a category to get started</div>
     <div class="intro-cats" id="introCats"></div>
   </div>
 </section>
@@ -398,6 +463,15 @@
   <nav id="catSidebar"></nav>
   <div class="cat-mobile-bar" id="catMobileBar"></div>
 </div>
+
+<details class="how-it-works">
+  <summary>How it works <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" class="how-chevron"><path d="m6 9 6 6 6-6"/></svg></summary>
+  <div class="how-steps">
+    <div class="how-step"><div class="how-step-num">1</div><div><strong>Sign up to BBDBuy</strong><p>Create your free account and grab your welcome coupons.</p></div></div>
+    <div class="how-step"><div class="how-step-num">2</div><div><strong>Pick an item &amp; hit Buy</strong><p>Tap any product here — it opens the BBDBuy checkout link.</p></div></div>
+    <div class="how-step"><div class="how-step-num">3</div><div><strong>Pay $9/kg shipping</strong><p>BBDBuy ships it to you once your order is packed.</p></div></div>
+  </div>
+</details>
 
 <main>
   <div class="content">
@@ -486,6 +560,28 @@
 </div>
 
 
+<!-- Suggest an item modal -->
+<div class="overlay" id="suggestOverlay" onclick="if(event.target===this) closeSuggestModal()">
+  <div class="modal" id="suggestModal">
+    <button class="modal-close" onclick="closeSuggestModal()">&times;</button>
+    <div class="modal-title">Suggest an item</div>
+    <div class="field">
+      <label>What are you looking for?</label>
+      <textarea id="suggestText" placeholder="e.g. Balenciaga Speed Trainers, or a link to the item on Taobao/Weidian/1688"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeSuggestModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="copySuggestion()">Copy suggestion</button>
+    </div>
+  </div>
+</div>
+
+<!-- Image lightbox -->
+<div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
 <!-- Coupon popup — shown once the product list scrolls into view -->
 <div class="coupon-overlay" id="couponOverlay" onclick="if(event.target===this) dismissCoupon()">
   <div class="coupon-card">
@@ -512,6 +608,64 @@
   const INVITE_CODE = 'dNNSBt';
   let editMode = false, imageDataURL = null, editingId = null;
   let activeCategory = '';
+  let wishlistViewActive = false;
+
+  /* ── Wishlist (localStorage, no login needed) ── */
+  function getWishlist() {
+    try { return JSON.parse(localStorage.getItem('bbdbuy_wishlist') || '[]'); } catch(e) { return []; }
+  }
+  function isWishlisted(id) { return getWishlist().indexOf(id) !== -1; }
+  function toggleWishlist(id) {
+    let list = getWishlist();
+    const idx = list.indexOf(id);
+    if (idx === -1) { list.push(id); toast('Saved to wishlist ♥'); } else { list.splice(idx, 1); toast('Removed from wishlist'); }
+    localStorage.setItem('bbdbuy_wishlist', JSON.stringify(list));
+    updateWishlistCount();
+    render(document.getElementById('searchInput').value);
+  }
+  function updateWishlistCount() {
+    const el = document.getElementById('wishlistCount');
+    if (el) el.textContent = getWishlist().length;
+  }
+  function toggleWishlistView() {
+    wishlistViewActive = !wishlistViewActive;
+    document.getElementById('wishlistToggle').classList.toggle('active', wishlistViewActive);
+    if (wishlistViewActive) {
+      document.querySelectorAll('.cat-pill').forEach(function(btn){ btn.classList.remove('active'); });
+      document.getElementById('sectionLabel').textContent = 'Your wishlist';
+    } else {
+      document.getElementById('sectionLabel').textContent = activeCategory ? activeCategory : 'All products';
+      document.querySelectorAll('.cat-pill').forEach(function(btn){
+        btn.classList.toggle('active', btn.textContent === (activeCategory || 'All finds'));
+      });
+    }
+    render(document.getElementById('searchInput').value);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ── Image lightbox ── */
+  function openLightbox(src, alt) {
+    const overlay = document.getElementById('lightboxOverlay');
+    const img = document.getElementById('lightboxImg');
+    img.src = src; img.alt = alt || '';
+    overlay.classList.add('open');
+  }
+  function closeLightbox() {
+    document.getElementById('lightboxOverlay').classList.remove('open');
+  }
+
+  /* ── Suggest an item ── */
+  function openSuggestModal() { document.getElementById('suggestOverlay').classList.add('open'); }
+  function closeSuggestModal() { document.getElementById('suggestOverlay').classList.remove('open'); document.getElementById('suggestText').value = ''; }
+  function copySuggestion() {
+    const val = document.getElementById('suggestText').value.trim();
+    if (!val) { toast('Type what you\'re looking for first.'); return; }
+    const text = 'Item suggestion for RepMania\'s Finds: ' + val;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ toast('Copied — paste it wherever you reach us!'); closeSuggestModal(); }).catch(function(){ toast('Could not copy — please copy manually.'); });
+    } else { toast('Could not copy — please copy manually.'); }
+  }
+
   let activeSort = 'newest';
   let isAdmin = false;
   let cachedProducts = [];
@@ -635,7 +789,7 @@
         var id = u.searchParams.get('id');
         if (!id) return null;
         return {
-          bbdbuyUrl: 'https://www.bbdbuy.com/product/1/' + id + '?inviteCode=' + INVITE_CODE,
+          bbdbuyUrl: 'https://link.bbdbuy.com/goods/TAOBAO/' + id + '?inviteCode=' + INVITE_CODE,
           platform: 'Taobao',
           itemId: id
         };
@@ -646,7 +800,7 @@
         var itemID = u.searchParams.get('itemID');
         if (!itemID) return null;
         return {
-          bbdbuyUrl: 'https://www.bbdbuy.com/product/weidian/' + itemID + '?inviteCode=' + INVITE_CODE,
+          bbdbuyUrl: 'https://link.bbdbuy.com/goods/WEIDIAN/' + itemID + '?inviteCode=' + INVITE_CODE,
           platform: 'Weidian',
           itemId: itemID
         };
@@ -657,7 +811,7 @@
         if (!match) return null;
         var offerId = match[1];
         return {
-          bbdbuyUrl: 'https://www.bbdbuy.com/product/0/' + offerId + '?inviteCode=' + INVITE_CODE,
+          bbdbuyUrl: 'https://link.bbdbuy.com/goods/1688/' + offerId + '?inviteCode=' + INVITE_CODE,
           platform: '1688',
           itemId: offerId
         };
@@ -736,8 +890,11 @@
   }
 
   async function init() {
+    const urlCat = new URLSearchParams(location.search).get('cat');
+    if (urlCat) { activeCategory = urlCat; dismissIntro(); }
     buildCategoryUI();
     populateCategorySelect();
+    updateWishlistCount();
     if (!sb) { render(); return; }
     try {
       const { data } = await sb.auth.getSession();
@@ -790,10 +947,17 @@
 
   function setCategory(cat) {
     activeCategory = cat;
+    wishlistViewActive = false;
+    document.getElementById('wishlistToggle').classList.remove('active');
     document.querySelectorAll('.cat-pill').forEach(function(btn){
       btn.classList.toggle('active', btn.textContent === (cat || 'All finds'));
     });
     document.getElementById('sectionLabel').textContent = cat ? cat : 'All products';
+    try {
+      const url = new URL(location.href);
+      if (cat) { url.searchParams.set('cat', cat); } else { url.searchParams.delete('cat'); }
+      history.replaceState(null, '', url.toString());
+    } catch(e) { /* blocked in sandboxed preview iframes — fine on a real domain */ }
     render(document.getElementById('searchInput').value);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -858,7 +1022,9 @@
     filter = filter || '';
     const grid = document.getElementById('grid');
     const q = filter.toLowerCase().trim();
-    let filtered = activeCategory ? cachedProducts.filter(p => p.category === activeCategory) : cachedProducts;
+    let filtered = wishlistViewActive
+      ? cachedProducts.filter(p => isWishlisted(p.id))
+      : (activeCategory ? cachedProducts.filter(p => p.category === activeCategory) : cachedProducts);
     filtered = q ? filtered.filter(p => p.name.toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q)) : filtered;
 
     if (activeSort === 'newest') {
@@ -892,31 +1058,53 @@
 
     document.getElementById('countLabel').textContent = filtered.length ? '(' + filtered.length + ')' : '';
     grid.innerHTML = '';
+
+    if (!productsLoaded && !q) {
+      grid.classList.add('is-skeleton');
+      for (var s = 0; s < 8; s++) {
+        var sk = document.createElement('div');
+        sk.className = 'skeleton-card';
+        sk.innerHTML = '<div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div>';
+        grid.appendChild(sk);
+      }
+      return;
+    }
+    grid.classList.remove('is-skeleton');
+
     if (!filtered.length) {
       const el = document.createElement('div'); el.id = 'empty';
+      const heartIcon = '<svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>';
       const icon = '<svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>';
-      el.innerHTML = q
-        ? '<div class="empty-icon">' + icon + '</div><strong>No results</strong><p>Try a different search.</p>'
-        : (productsLoaded
-            ? '<div class="empty-icon">' + icon + '</div><strong>' + (activeCategory ? 'Nothing here yet' : 'No products yet') + '</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>'
-            : '<div class="loading-spinner"></div><strong>Products loading&hellip;</strong><p>Please wait a moment.</p>');
+      el.innerHTML = wishlistViewActive
+        ? '<div class="empty-icon">' + heartIcon + '</div><strong>Nothing saved yet</strong><p>Tap the heart on any item to save it here.</p>'
+        : (q
+            ? '<div class="empty-icon">' + icon + '</div><strong>No results</strong><p>Try a different search.</p>'
+            : '<div class="empty-icon">' + icon + '</div><strong>' + (activeCategory ? 'Nothing here yet' : 'No products yet') + '</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>');
       grid.appendChild(el); return;
     }
+    var NEW_WINDOW_MS = 48 * 60 * 60 * 1000;
     filtered.forEach(function(p) {
       const card = document.createElement('div');
       const isPinned = pinnedIds.indexOf(p.id) !== -1;
+      const isLoved = isWishlisted(p.id);
+      const createdAt = parseInt(p.id, 10);
+      const isNew = !isNaN(createdAt) && (Date.now() - createdAt) < NEW_WINDOW_MS;
       card.className = 'card'; card.dataset.id = p.id;
-      const imgHTML = p.image ? '<img class="card-img" src="' + esc(p.image) + '" alt="' + esc(p.name) + '" loading="lazy">' : '<div class="card-img-placeholder">No image</div>';
+      const imgHTML = p.image
+        ? '<img class="card-img" src="' + esc(p.image) + '" alt="' + esc(p.name) + '" loading="lazy" onclick="openLightbox(&quot;' + esc(p.image) + '&quot;, &quot;' + esc(p.name) + '&quot;)">'
+        : '<div class="card-img-placeholder">No image</div>';
       const catHTML = p.category ? '<div class="card-cat">' + esc(p.category) + '</div>' : '';
       const priceHTML = p.desc ? '<div class="card-price">' + esc(p.desc).replace('≈', '<span class="price-break"></span>≈') + '</div>' : '';
       const viewCount = getViewCount(p.id);
       const viewsHTML = '<div class="card-views"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' + viewCount + ' views</div>';
       const pinBadge = isPinned ? '<div class="card-pin-badge"><svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>PINNED</div>' : '';
+      const newBadge = isNew ? '<div class="card-new-badge">NEW</div>' : '';
+      const heartBtn = '<button class="card-heart' + (isLoved ? ' active' : '') + '" onclick="toggleWishlist(&quot;' + p.id + '&quot;)" title="' + (isLoved ? 'Remove from wishlist' : 'Save to wishlist') + '"><svg width="13" height="13" fill="' + (isLoved ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></button>';
       const delBtn = isAdmin ? '<button class="card-delete" onclick="deleteProduct(&quot;' + p.id + '&quot;)" title="Remove">&times;</button>' : '';
       const editBtn = isAdmin ? '<button class="card-edit" onclick="openEditModal(&quot;' + p.id + '&quot;)" title="Edit"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' : '';
       const pinBtn = isAdmin ? '<button class="card-pin-btn' + (isPinned ? ' pinned' : '') + '" onclick="togglePin(&quot;' + p.id + '&quot;)" title="' + (isPinned ? 'Unpin product' : 'Pin to top') + '"><svg width="11" height="11" fill="' + (isPinned ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>' : '';
 
-      card.innerHTML = imgHTML + pinBadge + '<div class="card-body"><div class="card-meta-row">' + catHTML + '</div><div class="card-name">' + esc(p.name) + '</div><div class="card-bottom-row">' + (priceHTML || '<div class="card-price"></div>') + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener" onclick="recordView(&quot;' + p.id + '&quot;)">BUY</a></div></div>' + delBtn + editBtn + pinBtn;
+      card.innerHTML = imgHTML + pinBadge + newBadge + heartBtn + '<div class="card-body"><div class="card-meta-row">' + catHTML + '</div><div class="card-name">' + esc(p.name) + '</div><div class="card-bottom-row">' + (priceHTML || '<div class="card-price"></div>') + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener" onclick="recordView(&quot;' + p.id + '&quot;)">BUY</a></div></div>' + delBtn + editBtn + pinBtn;
       card.style.animation = 'none';
       card.style.opacity = '0';
       grid.appendChild(card);
