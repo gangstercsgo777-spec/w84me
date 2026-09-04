@@ -154,6 +154,12 @@
   .intro-scroll-cue { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--ink-soft); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; opacity: 0; animation: fadeInUp 0.5s ease both; animation-delay: 1.3s; }
   .intro-scroll-cue svg { animation: bounceCue 1.6s ease-in-out infinite; }
   @keyframes bounceCue { 0%,100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+  @keyframes heartPop { 0% { transform: scale(1); } 35% { transform: scale(1.35); } 60% { transform: scale(0.92); } 100% { transform: scale(1); } }
+  .card-heart.pop { animation: heartPop 0.45s cubic-bezier(0.34,1.56,0.64,1); }
+  .reveal-on-scroll { opacity: 0; transform: translateY(24px); transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .reveal-on-scroll.in-view { opacity: 1; transform: translateY(0); }
+  #grid { transition: opacity 0.18s ease; }
+  #grid.fading { opacity: 0.35; }
   @media (max-width: 480px) {
     .intro-card { padding: 32px 20px 28px; border-radius: var(--radius); }
     .intro-cats { gap: 8px; }
@@ -214,7 +220,7 @@
   .header-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
   .search-wrap { position: relative; }
   .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ink-soft); pointer-events: none; }
-  #searchInput { background: rgba(60,60,67,0.06); border: 1px solid transparent; border-radius: 999px; color: var(--ink); font-size: 13px; font-family: var(--font-ui); padding: 8px 14px 8px 34px; width: 180px; outline: none; transition: width 0.2s, background 0.2s, border-color 0.2s; }
+  #searchInput { background: rgba(60,60,67,0.06); border: 1px solid transparent; border-radius: 999px; color: var(--ink); font-size: 13px; font-family: var(--font-ui); padding: 8px 14px 8px 34px; width: 180px; outline: none; transition: width 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
   #searchInput:focus { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(10,132,255,0.12); }
   #searchInput::placeholder { color: var(--ink-soft); }
   @media (max-width: 640px) {
@@ -240,7 +246,9 @@
     .online-label { display: none; }
     .online-badge { padding: 5px 8px; }
   }
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; font-size: 13px; font-weight: 600; letter-spacing: 0.01em; font-family: var(--font-ui); cursor: pointer; border: none; border-radius: 999px; transition: all var(--dur-med) ease; text-decoration: none; background: rgba(60,60,67,0.07); color: var(--ink); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; font-size: 13px; font-weight: 600; letter-spacing: 0.01em; font-family: var(--font-ui); cursor: pointer; border: none; border-radius: 999px; transition: all var(--dur-med) cubic-bezier(0.16,1,0.3,1); text-decoration: none; background: rgba(60,60,67,0.07); color: var(--ink); }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: scale(0.96); }
   .btn-primary { background: linear-gradient(135deg, var(--accent), #5ac8fa); color: #fff; box-shadow: 0 6px 16px rgba(10,132,255,0.3); }
   .btn-primary:hover { box-shadow: 0 8px 20px rgba(10,132,255,0.4); transform: translateY(-1px); }
   .btn-primary:active { transform: scale(0.97); }
@@ -260,7 +268,8 @@
 
   .sort-bar { display: flex; gap: 8px; margin: 0; padding: 8px 28px 20px; flex-wrap: wrap; }
   .sort-pill { background: rgba(60,60,67,0.06); border: none; border-radius: 999px; color: var(--ink-soft); font-size: 12px; font-family: var(--font-ui); font-weight: 600; padding: 8px 14px; cursor: pointer; transition: all var(--dur-med) ease; white-space: nowrap; }
-  .sort-pill:hover { background: rgba(60,60,67,0.12); color: var(--ink); }
+  .sort-pill:hover { background: rgba(60,60,67,0.12); color: var(--ink); transform: translateY(-1px); }
+  .sort-pill:active { transform: scale(0.94); }
   .sort-pill.active { background: linear-gradient(135deg, var(--accent), #5ac8fa); color: #fff; box-shadow: 0 4px 12px rgba(10,132,255,0.3); }
 
   /* Grid */
@@ -276,7 +285,7 @@
   .cat-mobile-bar .cat-pill { flex: 0 0 auto; }
 
   .cat-pill { background: rgba(60,60,67,0.06); border: none; border-radius: 999px; color: var(--ink-soft); font-size: 12px; font-family: var(--font-ui); font-weight: 600; padding: 8px 15px; cursor: pointer; text-align: center; white-space: nowrap; transition: all var(--dur-med) ease; }
-  .cat-pill:hover { background: rgba(60,60,67,0.12); color: var(--ink); }
+  .cat-pill:hover { background: rgba(60,60,67,0.12); color: var(--ink); transform: translateY(-1px); }
   .cat-pill:active { animation: pillPop 0.3s ease both; }
   .cat-pill.active, .cat-pill.cat-pill-all.active { background: linear-gradient(135deg, var(--accent), #5ac8fa); color: #fff; box-shadow: 0 4px 12px rgba(10,132,255,0.3); }
 
@@ -334,7 +343,7 @@
   .modal-close:hover { background: rgba(60,60,67,0.16); }
   .field { margin-bottom: 16px; }
   .field label { display: block; font-size: 11px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; font-family: var(--font-ui); }
-  .field input { width: 100%; background: rgba(60,60,67,0.06); border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--ink); font-size: 14px; font-family: var(--font-ui); padding: 10px 13px; outline: none; transition: border-color 0.15s, background 0.15s; }
+  .field input { width: 100%; background: rgba(60,60,67,0.06); border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--ink); font-size: 14px; font-family: var(--font-ui); padding: 10px 13px; outline: none; transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease; }
   .field input:focus { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(10,132,255,0.12); }
   .field input::placeholder { color: var(--ink-soft); opacity: 0.7; }
   .field select { width: 100%; background: rgba(60,60,67,0.06); border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--ink); font-size: 14px; font-family: var(--font-ui); padding: 10px 13px; outline: none; appearance: none; cursor: pointer; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%230a84ff' stroke-width='2' viewBox='0 0 24 24'><path d='m6 9 6 6 6-6'/></svg>"); background-repeat: no-repeat; background-position: right 13px center; }
@@ -546,7 +555,7 @@
   </div>
 </main>
 
-<footer class="site-footer">
+<footer class="site-footer reveal-on-scroll">
   <div class="site-footer-card">
     <p><strong>w84me.space</strong> is not affiliated with Weidian.com, Taobao.com, 1688.com, tmall.com or any other shopping site ("platforms"). This website is not an official offer of those platforms.</p>
     <p>All BBDBuy links are affiliate links. This includes the price tag buttons, *-tagged links and the links embedded in images. We do not get a commission for the sale of the item, only for their function as a freight forwarder.</p>
@@ -670,13 +679,21 @@
     try { return JSON.parse(localStorage.getItem('bbdbuy_wishlist') || '[]'); } catch(e) { return []; }
   }
   function isWishlisted(id) { return getWishlist().indexOf(id) !== -1; }
-  function toggleWishlist(id) {
+  function toggleWishlist(id, btnEl) {
     let list = getWishlist();
     const idx = list.indexOf(id);
-    if (idx === -1) { list.push(id); toast('Saved to wishlist ♥'); } else { list.splice(idx, 1); toast('Removed from wishlist'); }
+    const nowLoved = idx === -1;
+    if (nowLoved) { list.push(id); toast('Saved to wishlist ♥'); } else { list.splice(idx, 1); toast('Removed from wishlist'); }
     localStorage.setItem('bbdbuy_wishlist', JSON.stringify(list));
     updateWishlistCount();
-    render(document.getElementById('searchInput').value);
+    const searchVal = document.getElementById('searchInput').value;
+    if (btnEl) {
+      btnEl.classList.toggle('active', nowLoved);
+      btnEl.classList.add('pop');
+      setTimeout(function(){ render(searchVal); }, 260);
+    } else {
+      render(searchVal);
+    }
   }
   function updateWishlistCount() {
     const el = document.getElementById('wishlistCount');
@@ -1074,6 +1091,13 @@
   }
 
   function render(filter) {
+    const grid = document.getElementById('grid');
+    if (grid) grid.classList.add('fading');
+    renderImpl(filter);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ if (grid) grid.classList.remove('fading'); }); });
+  }
+
+  function renderImpl(filter) {
     filter = filter || '';
     const grid = document.getElementById('grid');
     const q = filter.toLowerCase().trim();
@@ -1154,7 +1178,7 @@
       const viewsHTML = '<div class="card-views"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' + viewCount + ' views</div>';
       const pinBadge = isPinned ? '<div class="card-pin-badge"><svg width="10" height="10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>PINNED</div>' : '';
       const newBadge = isNew ? '<div class="card-new-badge">NEW</div>' : '';
-      const heartBtn = '<button class="card-heart' + (isLoved ? ' active' : '') + '" onclick="toggleWishlist(&quot;' + p.id + '&quot;)" title="' + (isLoved ? 'Remove from wishlist' : 'Save to wishlist') + '"><svg width="13" height="13" fill="' + (isLoved ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></button>';
+      const heartBtn = '<button class="card-heart' + (isLoved ? ' active' : '') + '" onclick="toggleWishlist(&quot;' + p.id + '&quot;, this)" title="' + (isLoved ? 'Remove from wishlist' : 'Save to wishlist') + '"><svg width="13" height="13" fill="' + (isLoved ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></button>';
       const delBtn = isAdmin ? '<button class="card-delete" onclick="deleteProduct(&quot;' + p.id + '&quot;)" title="Remove">&times;</button>' : '';
       const editBtn = isAdmin ? '<button class="card-edit" onclick="openEditModal(&quot;' + p.id + '&quot;)" title="Edit"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' : '';
       const pinBtn = isAdmin ? '<button class="card-pin-btn' + (isPinned ? ' pinned' : '') + '" onclick="togglePin(&quot;' + p.id + '&quot;)" title="' + (isPinned ? 'Unpin product' : 'Pin to top') + '"><svg width="11" height="11" fill="' + (isPinned ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>' : '';
@@ -1370,6 +1394,22 @@
     if (el) el.classList.remove('open');
   }
   let couponTriggerArmed = false;
+  /* Scroll-reveal for footer & other .reveal-on-scroll elements */
+  function setupScrollReveal() {
+    const targets = document.querySelectorAll('.reveal-on-scroll');
+    if (!targets.length || !('IntersectionObserver' in window)) {
+      targets.forEach(function(el){ el.classList.add('in-view'); });
+      return;
+    }
+    const obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) { entry.target.classList.add('in-view'); obs.unobserve(entry.target); }
+      });
+    }, { threshold: 0.1 });
+    targets.forEach(function(el){ obs.observe(el); });
+  }
+  setupScrollReveal();
+
   function setupCouponTrigger() {
     if (couponTriggerArmed) return;
     couponTriggerArmed = true;
