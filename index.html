@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RM's Spreadsheet</title>
-<meta name="description" content="RepMania's Finds — a curated catalog of the best finds, ready to order through BBDBuy.">
+<meta name="description" content="RepMania's Finds - a curated catalog of the best finds, ready to order through BBDBuy.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="RepMania's Finds">
 <meta property="og:description" content="A curated catalog of the best finds, ready to order through BBDBuy — $9/kg shipping.">
@@ -255,6 +255,7 @@
   }
   .card:hover { z-index: 3; transform: translateY(-3px); box-shadow: 0 14px 30px rgba(30,30,60,0.14); }
   .card:hover .card-img { transform: scale(1.03); }
+  .card-media { position: relative; }
   .card-img { width: 100%; aspect-ratio: 1; object-fit: cover; background: #eef1f6; display: block; border: none; transition: transform 0.5s ease; }
   .card-img-placeholder { width: 100%; aspect-ratio: 1; background: #eef1f6; border: none; display: flex; align-items: center; justify-content: center; color: var(--ink-soft); font-size: 30px; font-weight: 600; font-family: var(--font-title); }
   .card-body { padding: 14px 14px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; text-align: left; }
@@ -1104,7 +1105,7 @@
       const editBtn = isAdmin ? '<button class="card-edit" onclick="openEditModal(&quot;' + p.id + '&quot;)" title="Edit"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' : '';
       const pinBtn = isAdmin ? '<button class="card-pin-btn' + (isPinned ? ' pinned' : '') + '" onclick="togglePin(&quot;' + p.id + '&quot;)" title="' + (isPinned ? 'Unpin product' : 'Pin to top') + '"><svg width="11" height="11" fill="' + (isPinned ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>' : '';
 
-      card.innerHTML = imgHTML + pinBadge + newBadge + heartBtn + '<div class="card-body"><div class="card-meta-row">' + catHTML + '</div><div class="card-name">' + esc(p.name) + '</div><div class="card-bottom-row">' + (priceHTML || '<div class="card-price"></div>') + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener" onclick="recordView(&quot;' + p.id + '&quot;)">BUY</a></div></div>' + delBtn + editBtn + pinBtn;
+      card.innerHTML = '<div class="card-media">' + imgHTML + pinBadge + newBadge + heartBtn + pinBtn + '</div><div class="card-body"><div class="card-meta-row">' + catHTML + '</div><div class="card-name">' + esc(p.name) + '</div><div class="card-bottom-row">' + (priceHTML || '<div class="card-price"></div>') + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener" onclick="recordView(&quot;' + p.id + '&quot;)">BUY</a></div></div>' + delBtn + editBtn;
       card.style.animation = 'none';
       card.style.opacity = '0';
       grid.appendChild(card);
