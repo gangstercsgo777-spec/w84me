@@ -48,7 +48,7 @@
   @keyframes shimmerText { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
   @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.85) translateY(16px); } 60% { opacity: 1; transform: scale(1.02) translateY(-2px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 
-  html, body { width: 100%; }
+  html, body { width: 100%; overflow-x: hidden; }
   body {
     background: var(--bg);
     background-image:
@@ -303,6 +303,7 @@
     border: none;
     border-radius: var(--radius);
     margin: 0;
+    min-width: 0;
     overflow: visible; display: flex; flex-direction: column;
     transition: transform var(--dur-med) ease;
     position: relative;
