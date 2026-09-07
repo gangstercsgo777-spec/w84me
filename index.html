@@ -257,6 +257,19 @@
 
   .sort-bar { display: flex; gap: 8px; margin: 0; padding: 8px 28px 20px; flex-wrap: wrap; }
 
+  .info-notice {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--accent-soft); color: var(--accent-dark);
+    font-size: 12px; font-weight: 500; font-family: var(--font-ui);
+    padding: 9px 16px; margin: 0 28px 14px; border-radius: var(--radius-sm);
+    animation: fadeInUp 0.4s ease both;
+  }
+  .info-notice svg { flex-shrink: 0; }
+  .info-notice span { flex: 1; }
+  .info-notice button { background: none; border: none; color: var(--accent-dark); opacity: 0.6; cursor: pointer; font-size: 15px; line-height: 1; padding: 0 2px; flex-shrink: 0; }
+  .info-notice button:hover { opacity: 1; }
+  @media (max-width: 640px) { .info-notice { margin: 0 16px 12px; } }
+
   /* View tabs (Items overview / Sellers) */
   .view-tabs { display: flex; gap: 4px; padding: 20px 28px 0; }
   .view-tab { background: transparent; border: none; color: var(--ink-soft); font-family: var(--font-ui); font-size: 13px; font-weight: 600; padding: 10px 16px; cursor: pointer; border-radius: 999px; transition: all var(--dur-med) ease; }
@@ -595,6 +608,11 @@
         <button class="sort-pill" data-sort="views" onclick="setSort('views')">
           <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="vertical-align:-1px;margin-right:3px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Most viewed
         </button>
+      </div>
+      <div class="info-notice" id="imgLoadNotice">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <span>Images may take up to 10 seconds to load&hellip;</span>
+        <button onclick="this.parentElement.remove()" title="Dismiss">&times;</button>
       </div>
       <div id="grid"><div id="empty"><div class="loading-spinner"></div><strong>Products loading...</strong><p>Please wait 3-5 seconds.</p></div></div>
     </div>
