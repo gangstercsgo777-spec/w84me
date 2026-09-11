@@ -7,10 +7,10 @@
 <meta name="description" content="RepMania Finds — a curated catalog of the best finds, ready to order through KakoBuy.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="RepMania Finds">
-<meta property="og:description" content="A curated catalog of the best finds, ready to order through KakoBuy">
+<meta property="og:description" content="A curated catalog of the best finds, ready to order through KakoBuy — $9/kg shipping.">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RepMania Finds">
-<meta name="twitter:description" content="A curated catalog of the best finds, ready to order through KakoBuy">
+<meta name="twitter:description" content="A curated catalog of the best finds, ready to order through KakoBuy — $9/kg shipping.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -287,10 +287,18 @@
   .seller-card { min-width: 0; background: var(--glass-strong); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius); overflow: hidden; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.06); transition: transform var(--dur-med) ease; position: relative; animation: cardEntrance 0.3s ease both; }
   .seller-card:hover { transform: translateY(-3px); }
   .seller-avatar-wrap { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; }
-  .seller-avatar-bg { position: absolute; inset: 0; background-size: cover; background-position: center; filter: blur(28px) saturate(160%) brightness(1.05); transform: scale(1.35); }
-  .seller-avatar-bg::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.28); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  .seller-avatar { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; }
-  .seller-avatar-placeholder { position: relative; z-index: 1; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--accent-soft); color: var(--ink-soft); font-size: 30px; font-weight: 600; font-family: var(--font-title); }
+  .seller-text-avatar {
+    position: relative; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(145deg, rgba(255,59,74,0.24), rgba(255,138,92,0.16));
+    padding: 12px;
+  }
+  .seller-text-avatar span {
+    font-family: var(--font-title); font-weight: 800; letter-spacing: -0.02em;
+    text-align: center; line-height: 1.05; word-break: break-word;
+    background: linear-gradient(135deg, var(--accent), #ff8a5c);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
   .seller-name { padding: 14px 14px 4px; font-size: 15px; font-weight: 600; color: var(--ink); word-break: break-word; }
   .seller-link-btn { display: inline-block; margin: 12px 14px 16px; padding: 8px 22px; background: linear-gradient(135deg, var(--accent), #ff8a5c); color: #fff; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; box-shadow: 0 4px 12px rgba(255,59,74,0.28); transition: all var(--dur-med) ease; }
   .seller-link-btn:hover { box-shadow: 0 6px 16px rgba(255,59,74,0.4); transform: translateY(-1px); }
@@ -306,9 +314,17 @@
   .sort-pill.active { background: linear-gradient(135deg, var(--accent), #ff8a5c); color: #fff; box-shadow: 0 4px 12px rgba(255,59,74,0.3); }
 
   /* Grid */
-  #grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; width: 100%; padding: 12px 28px 70px; }
-  @media (max-width: 900px)  { #grid { grid-template-columns: repeat(2, 1fr); gap: 18px; padding: 10px 20px 50px; } }
-  @media (max-width: 480px)  { #grid { grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 8px 14px 40px; } }
+  #grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; width: 100%; padding: 12px 28px 24px; }
+
+  #pagination { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; padding: 0 28px 60px; }
+  .page-btn { min-width: 34px; height: 34px; padding: 0 10px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid var(--line); color: var(--ink-soft); font-family: var(--font-ui); font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--dur-med) ease; }
+  .page-btn:hover:not(:disabled) { background: rgba(255,255,255,0.12); color: var(--ink); transform: translateY(-1px); }
+  .page-btn:disabled { opacity: 0.35; cursor: default; }
+  .page-btn.active { background: linear-gradient(135deg, var(--accent), #ff8a5c); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(255,59,74,0.3); }
+  .page-ellipsis { color: var(--ink-soft); font-size: 13px; padding: 0 2px; }
+  @media (max-width: 480px) { #pagination { padding: 0 14px 44px; } .page-btn { min-width: 30px; height: 30px; font-size: 12px; } }
+  @media (max-width: 900px)  { #grid { grid-template-columns: repeat(2, 1fr); gap: 18px; padding: 10px 20px 20px; } }
+  @media (max-width: 480px)  { #grid { grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 8px 14px 16px; } }
 
   #catSidebar { display: none; }
 
@@ -574,7 +590,7 @@
     <div class="intro-eyebrow">✨ Curated Finds</div>
     <h1 class="intro-title shimmer-title">RepMania Finds</h1>
     <a class="intro-cta" href="https://ikako.vip/r/kakomania" target="_blank" rel="noopener">
-      Sign up to KakoBuy &middot;
+      Sign up to KakoBuy &middot; $9/kg shipping
     </a>
     <div class="intro-cta-sub">$400+ in coupons &middot; code <strong>RM15</strong> for $15 off &middot; <strong>RM20</strong> for 20% off</div>
     <div class="intro-pick-label">What are you here for?</div>
@@ -608,7 +624,7 @@
   <div class="how-steps">
     <div class="how-step"><div class="how-step-num">1</div><div><strong>Sign up to KakoBuy</strong><p>Create your free account and grab your welcome coupons.</p></div></div>
     <div class="how-step"><div class="how-step-num">2</div><div><strong>Pick an item &amp; hit Buy</strong><p>Tap any product here — it opens the KakoBuy checkout link.</p></div></div>
-    <div class="how-step"><div class="how-step-num">3</div><div><strong>Pay for shipping, use coupon code "RM15" or "RM20"</strong><p>KakoBuy ships it to you once your order is packed.</p></div></div>
+    <div class="how-step"><div class="how-step-num">3</div><div><strong>Pay $9/kg shipping</strong><p>KakoBuy ships it to you once your order is packed.</p></div></div>
   </div>
 </details>
 
@@ -638,6 +654,7 @@
         <button onclick="this.parentElement.remove()" title="Dismiss">&times;</button>
       </div>
       <div id="grid"><div id="empty"><div class="loading-spinner"></div><strong>Products loading...</strong><p>Please wait 3-5 seconds.</p></div></div>
+      <div id="pagination" style="display:none;"></div>
     </div>
 
     <div id="sellersView" style="display:none;">
@@ -711,8 +728,7 @@
   <div class="modal" style="max-width:400px;">
     <button class="modal-close" onclick="closeSellerModal()">&times;</button>
     <div class="modal-title" id="sellerModalTitle">Add seller</div>
-    <div class="field"><label>Seller name</label><input type="text" id="sellerName" placeholder="e.g. Jordan's Closet"></div>
-    <div class="field"><label>Image URL</label><input type="url" id="sellerImage" placeholder="https://example.com/photo.jpg"></div>
+    <div class="field"><label>Seller name</label><input type="text" id="sellerName" placeholder="e.g. Dragon - Great Streetwear"></div>
     <div class="field"><label>Link</label><input type="url" id="sellerLink" placeholder="https://&hellip;"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeSellerModal()">Cancel</button>
@@ -791,6 +807,8 @@
   let editMode = false, imageDataURL = null, editingId = null;
   let activeCategory = '';
   let wishlistViewActive = false;
+  const PAGE_SIZE = 50;
+  let currentPage = 1;
 
   /* ── Wishlist (localStorage, no login needed) ── */
   function getWishlist() {
@@ -819,6 +837,7 @@
   }
   function toggleWishlistView() {
     wishlistViewActive = !wishlistViewActive;
+    currentPage = 1;
     document.getElementById('wishlistToggle').classList.toggle('active', wishlistViewActive);
     if (wishlistViewActive) {
       document.querySelectorAll('.cat-pill').forEach(function(btn){ btn.classList.remove('active'); });
@@ -1054,6 +1073,7 @@
 
   function setSort(sort) {
     activeSort = sort;
+    currentPage = 1;
     document.querySelectorAll('.sort-pill').forEach(function(btn) {
       btn.classList.toggle('active', btn.dataset.sort === sort);
     });
@@ -1138,6 +1158,7 @@
   function setCategory(cat) {
     activeCategory = cat;
     wishlistViewActive = false;
+    currentPage = 1;
     document.getElementById('wishlistToggle').classList.remove('active');
     document.querySelectorAll('.cat-pill').forEach(function(btn){
       btn.classList.toggle('active', btn.textContent === (cat || 'All finds'));
@@ -1266,6 +1287,7 @@
         sk.innerHTML = '<div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div>';
         grid.appendChild(sk);
       }
+      renderPagination(0, 0);
       return;
     }
     grid.classList.remove('is-skeleton');
@@ -1279,10 +1301,19 @@
         : (q
             ? '<div class="empty-icon">' + icon + '</div><strong>No results</strong><p>Try a different search.</p>'
             : '<div class="empty-icon">' + icon + '</div><strong>' + (activeCategory ? 'Nothing here yet' : 'No products yet') + '</strong><p>' + (activeCategory ? 'No products in this category yet.' : 'Will add soon!') + '</p>');
-      grid.appendChild(el); return;
+      grid.appendChild(el);
+      renderPagination(0, 0);
+      return;
     }
+
+    var totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    var pageStart = (currentPage - 1) * PAGE_SIZE;
+    var pageItems = filtered.slice(pageStart, pageStart + PAGE_SIZE);
+
     var NEW_WINDOW_MS = 48 * 60 * 60 * 1000;
-    filtered.forEach(function(p) {
+    pageItems.forEach(function(p) {
       const card = document.createElement('div');
       const isPinned = pinnedIds.indexOf(p.id) !== -1;
       const isLoved = isWishlisted(p.id);
@@ -1317,6 +1348,33 @@
       })(card, Array.from(grid.children).length - 1);
     });
     if (editMode) grid.classList.add('edit-mode');
+    renderPagination(currentPage, totalPages);
+  }
+
+  function goToPage(p) {
+    currentPage = p;
+    render(document.getElementById('searchInput').value);
+    document.getElementById('grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderPagination(page, totalPages) {
+    var el = document.getElementById('pagination');
+    if (!el) return;
+    if (totalPages <= 1) { el.innerHTML = ''; el.style.display = 'none'; return; }
+    el.style.display = 'flex';
+    var html = '';
+    html += '<button class="page-btn" ' + (page <= 1 ? 'disabled' : '') + ' onclick="goToPage(' + (page - 1) + ')">&larr;</button>';
+    var pages = [];
+    for (var i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || Math.abs(i - page) <= 1) pages.push(i);
+      else if (pages[pages.length - 1] !== '…') pages.push('…');
+    }
+    pages.forEach(function(p) {
+      if (p === '…') { html += '<span class="page-ellipsis">&hellip;</span>'; }
+      else { html += '<button class="page-btn' + (p === page ? ' active' : '') + '" onclick="goToPage(' + p + ')">' + p + '</button>'; }
+    });
+    html += '<button class="page-btn" ' + (page >= totalPages ? 'disabled' : '') + ' onclick="goToPage(' + (page + 1) + ')">&rarr;</button>';
+    el.innerHTML = html;
   }
 
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1361,9 +1419,10 @@
     sellersCache.forEach(function(s) {
       const card = document.createElement('div');
       card.className = 'seller-card';
-      const avatarHTML = s.image
-        ? '<div class="seller-avatar-bg" style="background-image:url(&quot;' + esc(s.image) + '&quot;)"></div><img class="seller-avatar" src="' + esc(s.image) + '" alt="' + esc(s.name) + '" loading="lazy">'
-        : '<div class="seller-avatar-placeholder">' + esc((s.name||'?').charAt(0).toUpperCase()) + '</div>';
+      const shortText = (s.name || '?').split(/\s*-\s*/)[0].trim().toUpperCase() || '?';
+      const len = shortText.length;
+      const fontSize = len <= 5 ? 44 : len <= 8 ? 34 : len <= 12 ? 26 : len <= 16 ? 20 : 16;
+      const avatarHTML = '<div class="seller-text-avatar"><span style="font-size:' + fontSize + 'px;">' + esc(shortText) + '</span></div>';
       const delBtn = isAdmin ? '<button class="seller-delete" onclick="deleteSeller(&quot;' + s.id + '&quot;)" title="Remove">&times;</button>' : '';
       const editBtn = isAdmin ? '<button class="seller-edit" onclick="openEditSellerModal(&quot;' + s.id + '&quot;)" title="Edit"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' : '';
       card.innerHTML = '<div class="seller-avatar-wrap">' + avatarHTML + '</div><div class="seller-name">' + esc(s.name) + '</div><a class="seller-link-btn" href="' + esc(s.link) + '" target="_blank" rel="noopener">Link</a>' + delBtn + editBtn;
@@ -1375,7 +1434,6 @@
     editingSellerId = null;
     document.getElementById('sellerModalTitle').textContent = 'Add seller';
     document.getElementById('sellerName').value = '';
-    document.getElementById('sellerImage').value = '';
     document.getElementById('sellerLink').value = '';
     document.getElementById('sellerOverlay').classList.add('open');
   }
@@ -1386,7 +1444,6 @@
     editingSellerId = id;
     document.getElementById('sellerModalTitle').textContent = 'Edit seller';
     document.getElementById('sellerName').value = s.name || '';
-    document.getElementById('sellerImage').value = s.image || '';
     document.getElementById('sellerLink').value = s.link || '';
     document.getElementById('sellerOverlay').classList.add('open');
   }
@@ -1397,17 +1454,16 @@
 
   async function saveSeller() {
     const name = document.getElementById('sellerName').value.trim();
-    const image = document.getElementById('sellerImage').value.trim();
     const link = document.getElementById('sellerLink').value.trim();
     if (!name) { toast('Please enter a seller name.'); return; }
     if (!link) { toast('Please enter a link.'); return; }
     if (!sb) { toast('Not connected — cannot save.'); return; }
     if (editingSellerId) {
-      const { error } = await sb.from('sellers').update({ name: name, image: image || null, link: link }).eq('id', editingSellerId);
+      const { error } = await sb.from('sellers').update({ name: name, link: link }).eq('id', editingSellerId);
       if (error) { console.error(error); toast('Could not update seller.'); return; }
       toast('Seller updated!');
     } else {
-      const { error } = await sb.from('sellers').insert({ name: name, image: image || null, link: link });
+      const { error } = await sb.from('sellers').insert({ name: name, link: link });
       if (error) { console.error(error); toast('Could not save seller.'); return; }
       toast('Seller added!');
     }
@@ -1603,7 +1659,7 @@
     }
   });
 
-  document.getElementById('searchInput').addEventListener('input', function(e){ render(e.target.value); });
+  document.getElementById('searchInput').addEventListener('input', function(e){ currentPage = 1; render(e.target.value); });
   document.getElementById('prodName').addEventListener('input', autoDetectCategory);
   document.getElementById('prodCategory').addEventListener('change', function(){ categoryAutoFilled = false; });
 
