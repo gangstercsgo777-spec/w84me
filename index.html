@@ -402,6 +402,8 @@
   .modal-close:hover { background: rgba(255,255,255,0.16); }
   .field { margin-bottom: 16px; }
   .field label { display: block; font-size: 11px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; font-family: var(--font-ui); }
+  .kakobuy-key-link { background: rgba(255,255,255,0.06); color: var(--accent-dark); border: none; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 0.02em; text-transform: none; padding: 4px 10px; cursor: pointer; transition: all 0.15s ease; }
+  .kakobuy-key-link:hover { background: var(--accent-soft); }
   .field input { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--ink); font-size: 14px; font-family: var(--font-ui); padding: 10px 13px; outline: none; transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease; }
   .field input:focus { background: rgba(255,255,255,0.1); border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,59,74,0.18); }
   .field input::placeholder { color: var(--ink-soft); opacity: 0.7; }
@@ -704,7 +706,10 @@
     </div>
 
     <div class="field">
-      <label>Product image</label>
+      <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <span>Product image</span>
+        <button type="button" class="kakobuy-key-link" onclick="resetImgbbKey()" title="Change or reset your ImgBB API key">Image host key</button>
+      </label>
       <div class="img-tabs">
         <button type="button" class="img-tab active" id="tabUpload" onclick="switchImgTab('upload')">Upload</button>
         <button type="button" class="img-tab" id="tabLink" onclick="switchImgTab('link')">Image link</button>
@@ -716,6 +721,7 @@
       <input type="url" id="imgUrl" placeholder="https://example.com/image.jpg" style="display:none;" oninput="handleImgUrl(event)">
       <div id="previewWrap">
         <img id="previewImg" src="" alt="preview">
+        <div class="bg-remove-hint" id="uploadStatus"></div>
         <button type="button" class="bg-remove-btn" id="bgRemoveBtn" onclick="removeImageBackground()">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4M15 3h4a2 2 0 0 1 2 2v4M9 21H5a2 2 0 0 1-2-2v-4M15 21h4a2 2 0 0 0 2-2v-4"/></svg>
           <span id="bgRemoveBtnLabel">Remove background</span>
@@ -1644,8 +1650,68 @@
   function readImageFile(file) {
     if (!file || !file.type.startsWith('image/')) return;
     var r = new FileReader();
-    r.onload = function(ev){ imageDataURL = ev.target.result; document.getElementById('previewImg').src = imageDataURL; document.getElementById('previewWrap').style.display = 'block'; };
+    r.onload = function(ev){
+      imageDataURL = ev.target.result;
+      document.getElementById('previewImg').src = imageDataURL;
+      document.getElementById('previewWrap').style.display = 'block';
+      uploadImageToHost(imageDataURL);
+    };
     r.readAsDataURL(file);
+  }
+
+  /* ── ImgBB hosting: uploads base64 images so only a link gets stored in Supabase ── */
+  async function getImgbbKey() {
+    let key = localStorage.getItem('kakobuy_imgbb_key');
+    if (!key) {
+      key = prompt('Enter your free ImgBB API key.\n\nGet one at https://api.imgbb.com/ (free, no credit card) — it\'s only stored in this browser.');
+      if (key && key.trim()) { key = key.trim(); localStorage.setItem('kakobuy_imgbb_key', key); }
+      else { key = null; }
+    }
+    return key;
+  }
+
+  function resetImgbbKey() {
+    const current = localStorage.getItem('kakobuy_imgbb_key') || '';
+    const next = prompt('ImgBB API key (get one free at https://api.imgbb.com/):', current);
+    if (next === null) return;
+    if (next.trim()) { localStorage.setItem('kakobuy_imgbb_key', next.trim()); toast('Image host key saved.'); }
+    else { localStorage.removeItem('kakobuy_imgbb_key'); toast('Image host key cleared.'); }
+  }
+
+  async function uploadToImgbb(dataUrl) {
+    const key = await getImgbbKey();
+    if (!key) throw new Error('No ImgBB API key provided.');
+    const base64 = dataUrl.indexOf(',') !== -1 ? dataUrl.split(',')[1] : dataUrl;
+    const form = new FormData();
+    form.append('image', base64);
+    const res = await fetch('https://api.imgbb.com/1/upload?key=' + encodeURIComponent(key), { method: 'POST', body: form });
+    const json = await res.json();
+    if (!res.ok || !json.success) {
+      if (json && json.status_code === 400 && /key/i.test(JSON.stringify(json.error||''))) {
+        localStorage.removeItem('kakobuy_imgbb_key');
+      }
+      throw new Error((json && json.error && json.error.message) || 'ImgBB upload failed');
+    }
+    return json.data.url;
+  }
+
+  async function uploadImageToHost(dataUrl) {
+    const status = document.getElementById('uploadStatus');
+    status.textContent = 'Uploading to image host…';
+    try {
+      const hostedUrl = await uploadToImgbb(dataUrl);
+      // Only swap if this is still the current image (user hasn't changed it mid-upload)
+      if (imageDataURL === dataUrl) {
+        imageDataURL = hostedUrl;
+        document.getElementById('previewImg').src = hostedUrl;
+      }
+      status.textContent = '✓ Hosted — only a link will be saved.';
+      toast('Image hosted ✓');
+    } catch (e) {
+      console.error('Image hosting failed:', e);
+      status.textContent = 'Could not host image — the full image will be saved instead (uses more database space).';
+      toast('Could not host image, saving locally instead.');
+    }
   }
 
   /* ── AI background removal (runs fully in-browser, no API key, no server) ── */
@@ -1676,8 +1742,9 @@
       });
       imageDataURL = dataUrl;
       document.getElementById('previewImg').src = dataUrl;
-      hint.textContent = '✓ Background removed. Switched to a transparent PNG.';
+      hint.textContent = '✓ Background removed. Uploading to image host…';
       toast('Background removed ✓');
+      await uploadImageToHost(dataUrl);
     } catch (e) {
       console.error('Background removal failed:', e);
       hint.textContent = 'Failed — this often happens if the image host blocks cross-origin access. Try downloading the image and uploading it instead.';
