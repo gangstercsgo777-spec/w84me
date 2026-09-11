@@ -1633,12 +1633,18 @@
     document.getElementById('previewWrap').style.display = 'none';
   }
 
+  let urlAutoTimer = null;
   function handleImgUrl(e) {
     const url = e.target.value.trim();
+    if (urlAutoTimer) { clearTimeout(urlAutoTimer); urlAutoTimer = null; }
     if (url) {
       imageDataURL = url;
       document.getElementById('previewImg').src = url;
       document.getElementById('previewWrap').style.display = 'block';
+      document.getElementById('bgRemoveHint').textContent = 'Auto-processing in a moment…';
+      urlAutoTimer = setTimeout(function(){
+        if (imageDataURL === url) { removeImageBackground(); }
+      }, 700);
     } else {
       imageDataURL = null;
       document.getElementById('previewWrap').style.display = 'none';
@@ -1654,7 +1660,7 @@
       imageDataURL = ev.target.result;
       document.getElementById('previewImg').src = imageDataURL;
       document.getElementById('previewWrap').style.display = 'block';
-      uploadImageToHost(imageDataURL);
+      removeImageBackground();
     };
     r.readAsDataURL(file);
   }
@@ -1747,8 +1753,9 @@
       await uploadImageToHost(dataUrl);
     } catch (e) {
       console.error('Background removal failed:', e);
-      hint.textContent = 'Failed — this often happens if the image host blocks cross-origin access. Try downloading the image and uploading it instead.';
-      toast('Could not remove background.');
+      hint.textContent = 'Could not remove background (often a cross-origin restriction on that image host) — uploading the original instead…';
+      toast('Background removal skipped, hosting original image.');
+      await uploadImageToHost(imageDataURL);
     } finally {
       btn.disabled = false;
       label.textContent = 'Remove background';
