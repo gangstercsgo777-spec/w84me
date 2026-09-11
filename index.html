@@ -418,6 +418,11 @@
   .img-tab:not(.active):hover { color: var(--ink); }
   #previewWrap { display: none; margin-top: 12px; }
   #previewWrap img { width: 100%; max-height: 170px; object-fit: cover; border-radius: var(--radius-sm); }
+  .bg-remove-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 8px; padding: 9px 0; background: var(--accent-soft); color: var(--accent-dark); border: none; border-radius: var(--radius-sm); font-size: 12px; font-weight: 700; font-family: var(--font-ui); cursor: pointer; transition: all 0.15s ease; }
+  .bg-remove-btn:hover { background: rgba(255,59,74,0.28); }
+  .bg-remove-btn:disabled { opacity: 0.6; cursor: default; }
+  .bg-remove-btn svg.spin { animation: spin 0.8s linear infinite; }
+  .bg-remove-hint { font-size: 11px; color: var(--ink-soft); margin-top: 6px; text-align: center; min-height: 14px; }
   .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
   .modal-actions .btn { flex: 1; justify-content: center; padding: 11px 0; font-size: 13px; }
   #loginError { color: #ff3b30; font-size: 13px; margin-bottom: 12px; display: none; font-family: var(--font-ui); }
@@ -709,7 +714,14 @@
         <div class="upload-area-text"><strong>Click to upload</strong>drag &amp; drop, or paste (Ctrl+V) &mdash; PNG, JPG, WEBP</div>
       </div>
       <input type="url" id="imgUrl" placeholder="https://example.com/image.jpg" style="display:none;" oninput="handleImgUrl(event)">
-      <div id="previewWrap"><img id="previewImg" src="" alt="preview"></div>
+      <div id="previewWrap">
+        <img id="previewImg" src="" alt="preview">
+        <button type="button" class="bg-remove-btn" id="bgRemoveBtn" onclick="removeImageBackground()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4M15 3h4a2 2 0 0 1 2 2v4M9 21H5a2 2 0 0 1-2-2v-4M15 21h4a2 2 0 0 0 2-2v-4"/></svg>
+          <span id="bgRemoveBtnLabel">Remove background</span>
+        </button>
+        <div class="bg-remove-hint" id="bgRemoveHint"></div>
+      </div>
     </div>
     <div class="field"><label>Product name</label><input type="text" id="prodName" placeholder="e.g. Moncler Hoodie (39 Colorways)"></div>
     <div class="field"><label>Category</label><select id="prodCategory"></select></div>
@@ -1634,6 +1646,46 @@
     var r = new FileReader();
     r.onload = function(ev){ imageDataURL = ev.target.result; document.getElementById('previewImg').src = imageDataURL; document.getElementById('previewWrap').style.display = 'block'; };
     r.readAsDataURL(file);
+  }
+
+  /* ── AI background removal (runs fully in-browser, no API key, no server) ── */
+  let bgRemovalModule = null;
+  async function removeImageBackground() {
+    const btn = document.getElementById('bgRemoveBtn');
+    const label = document.getElementById('bgRemoveBtnLabel');
+    const hint = document.getElementById('bgRemoveHint');
+    if (!imageDataURL) { toast('Add an image first.'); return; }
+    btn.disabled = true;
+    label.textContent = 'Loading AI model…';
+    hint.textContent = 'First run downloads a small model — this can take 10–20s.';
+    try {
+      if (!bgRemovalModule) {
+        bgRemovalModule = await import('https://esm.sh/@imgly/background-removal@1.5.5');
+      }
+      label.textContent = 'Removing background…';
+      const blob = await bgRemovalModule.removeBackground(imageDataURL, {
+        progress: function(key, current, total) {
+          if (total) label.textContent = 'Processing… ' + Math.round((current / total) * 100) + '%';
+        }
+      });
+      const dataUrl = await new Promise(function(resolve, reject) {
+        const r = new FileReader();
+        r.onload = function(){ resolve(r.result); };
+        r.onerror = reject;
+        r.readAsDataURL(blob);
+      });
+      imageDataURL = dataUrl;
+      document.getElementById('previewImg').src = dataUrl;
+      hint.textContent = '✓ Background removed. Switched to a transparent PNG.';
+      toast('Background removed ✓');
+    } catch (e) {
+      console.error('Background removal failed:', e);
+      hint.textContent = 'Failed — this often happens if the image host blocks cross-origin access. Try downloading the image and uploading it instead.';
+      toast('Could not remove background.');
+    } finally {
+      btn.disabled = false;
+      label.textContent = 'Remove background';
+    }
   }
 
   var ua = document.getElementById('uploadArea');
