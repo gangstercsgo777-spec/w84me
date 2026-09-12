@@ -377,6 +377,10 @@
   .card-body { padding: 14px 14px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; text-align: left; background: var(--glass-strong); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border: 1px solid rgba(255,255,255,0.1); border-top: none; border-radius: 0 0 var(--radius) var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
   .card-name { font-size: 14px; font-weight: 600; line-height: 1.35; color: var(--ink); word-break: break-word; font-family: var(--font-ui); }
   .card-styles { font-size: 11px; font-weight: 500; color: var(--ink-soft); margin-top: 2px; }
+  .styles-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+  .styles-pill { background: rgba(255,255,255,0.06); border: 1px solid var(--line); color: var(--ink-soft); font-family: var(--font-ui); font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 999px; cursor: pointer; transition: all var(--dur-fast) ease; }
+  .styles-pill:hover { background: rgba(255,255,255,0.12); color: var(--ink); }
+  .styles-pill.active { background: linear-gradient(135deg, var(--accent), #ff8a5c); color: #fff; border-color: transparent; box-shadow: 0 4px 10px rgba(255,59,74,0.28); }
   .card-cat { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
   .card-meta-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .card-bottom-row { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 8px; }
@@ -732,7 +736,11 @@
     </div>
     <div class="field"><label>Product name</label><input type="text" id="prodName" placeholder="e.g. Moncler Hoodie (39 Colorways)"></div>
     <div class="field"><label>Category</label><select id="prodCategory"></select></div>
-    <div class="field"><label>Styles <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label><input type="text" id="prodStyles" placeholder="e.g. 10+ (defaults to 1)"></div>
+    <div class="field">
+      <label>Styles</label>
+      <div class="styles-picker" id="stylesPicker"></div>
+      <input type="hidden" id="prodStyles" value="1">
+    </div>
     <div class="field"><label>Price <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label><input type="text" id="prodDesc" placeholder="e.g. 43.79$"></div>
     <div class="field"><label>Button label</label><input type="text" id="prodBtnLabel" placeholder="BUY ON KAKOBUY"></div>
     <div class="field"><label>Button link</label><input type="url" id="prodLink" placeholder="https://&hellip;"></div>
@@ -1126,6 +1134,7 @@
     if (urlCat) { activeCategory = urlCat; dismissIntro(); }
     buildCategoryUI();
     populateCategorySelect();
+    buildStylesPicker();
     updateWishlistCount();
     if (!sb) { render(); return; }
     try {
@@ -1173,6 +1182,20 @@
   function populateCategorySelect() {
     const sel = document.getElementById('prodCategory');
     sel.innerHTML = '<option value="">No category</option>' + CATEGORIES.map(function(c){ return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+  }
+
+  const STYLE_OPTIONS = ['1','2','3','4','5','5+','10+','15+','20+','25+','30+','40+','50+'];
+  function buildStylesPicker() {
+    const picker = document.getElementById('stylesPicker');
+    picker.innerHTML = STYLE_OPTIONS.map(function(v){
+      return '<button type="button" class="styles-pill" data-value="' + v + '" onclick="setStyles(&quot;' + v + '&quot;)">' + v + '</button>';
+    }).join('');
+  }
+  function setStyles(val) {
+    document.getElementById('prodStyles').value = val;
+    document.querySelectorAll('.styles-pill').forEach(function(btn){
+      btn.classList.toggle('active', btn.dataset.value === val);
+    });
   }
 
   function setCategory(cat) {
@@ -1543,7 +1566,8 @@
     document.getElementById('overlay').classList.add('open');
     imageDataURL = null;
     categoryAutoFilled = true;
-    ['imgFile','prodName','prodDesc','prodBtnLabel','prodLink','imgUrl','sourceLink','prodStyles'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    ['imgFile','prodName','prodDesc','prodBtnLabel','prodLink','imgUrl','sourceLink'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    setStyles('1');
     document.getElementById('prodCategory').value = '';
     document.getElementById('previewWrap').style.display = 'none';
     document.getElementById('converterStatus').textContent = '';
@@ -1561,7 +1585,7 @@
     document.getElementById('modal-save-btn').textContent = 'Save changes';
     document.getElementById('prodName').value = p.name || '';
     document.getElementById('prodCategory').value = p.category || '';
-    document.getElementById('prodStyles').value = (p.styles && p.styles !== '1') ? p.styles : '';
+    setStyles(STYLE_OPTIONS.indexOf(p.styles) !== -1 ? p.styles : '1');
     document.getElementById('prodDesc').value = p.desc || '';
     document.getElementById('prodBtnLabel').value = p.btnLabel || '';
     document.getElementById('prodLink').value = p.link || '';
