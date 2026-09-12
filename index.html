@@ -376,6 +376,7 @@
   .card-img-placeholder { width: 100%; aspect-ratio: 1; background: var(--accent-soft); border: none; display: flex; align-items: center; justify-content: center; color: var(--ink-soft); font-size: 30px; font-weight: 600; font-family: var(--font-title); }
   .card-body { padding: 14px 14px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; text-align: left; background: var(--glass-strong); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border: 1px solid rgba(255,255,255,0.1); border-top: none; border-radius: 0 0 var(--radius) var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
   .card-name { font-size: 14px; font-weight: 600; line-height: 1.35; color: var(--ink); word-break: break-word; font-family: var(--font-ui); }
+  .card-styles { font-size: 11px; font-weight: 500; color: var(--ink-soft); margin-top: 2px; }
   .card-cat { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
   .card-meta-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .card-bottom-row { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 8px; }
@@ -731,6 +732,7 @@
     </div>
     <div class="field"><label>Product name</label><input type="text" id="prodName" placeholder="e.g. Moncler Hoodie (39 Colorways)"></div>
     <div class="field"><label>Category</label><select id="prodCategory"></select></div>
+    <div class="field"><label>Styles <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label><input type="text" id="prodStyles" placeholder="e.g. 10+ (defaults to 1)"></div>
     <div class="field"><label>Price <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label><input type="text" id="prodDesc" placeholder="e.g. 43.79$"></div>
     <div class="field"><label>Button label</label><input type="text" id="prodBtnLabel" placeholder="BUY ON KAKOBUY"></div>
     <div class="field"><label>Button link</label><input type="url" id="prodLink" placeholder="https://&hellip;"></div>
@@ -1239,7 +1241,7 @@
     const { data, error } = await sb.from('products').select('*').order('created_at', { ascending: true });
     if (error) { console.error(error); toast('Could not load products.'); return []; }
     return data.map(function(row) {
-      return { id: row.id, name: row.name, desc: row.desc, btnLabel: row.btn_label, link: row.link, image: row.image, category: row.category };
+      return { id: row.id, name: row.name, desc: row.desc, btnLabel: row.btn_label, link: row.link, image: row.image, category: row.category, styles: row.styles };
     });
   }
 
@@ -1352,7 +1354,8 @@
       const editBtn = isAdmin ? '<button class="card-edit" onclick="openEditModal(&quot;' + p.id + '&quot;)" title="Edit"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' : '';
       const pinBtn = isAdmin ? '<button class="card-pin-btn' + (isPinned ? ' pinned' : '') + '" onclick="togglePin(&quot;' + p.id + '&quot;)" title="' + (isPinned ? 'Unpin product' : 'Pin to top') + '"><svg width="11" height="11" fill="' + (isPinned ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>' : '';
 
-      card.innerHTML = '<div class="card-media">' + imgHTML + pinBadge + newBadge + heartBtn + pinBtn + '</div><div class="card-body"><div class="card-meta-row">' + catHTML + '</div><div class="card-name">' + esc(p.name) + '</div><div class="card-bottom-row">' + (priceHTML || '<div class="card-price"></div>') + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener" onclick="recordView(&quot;' + p.id + '&quot;)">BUY</a></div></div>' + delBtn + editBtn;
+      const stylesHTML = '<div class="card-styles">Styles: ' + esc(p.styles || '1') + '</div>';
+      card.innerHTML = '<div class="card-media">' + imgHTML + pinBadge + newBadge + heartBtn + pinBtn + '</div><div class="card-body"><div class="card-meta-row">' + catHTML + '</div><div class="card-name">' + esc(p.name) + '</div>' + stylesHTML + '<div class="card-bottom-row">' + (priceHTML || '<div class="card-price"></div>') + '<a class="card-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener" onclick="recordView(&quot;' + p.id + '&quot;)">BUY</a></div></div>' + delBtn + editBtn;
       card.style.animation = 'none';
       card.style.opacity = '0';
       grid.appendChild(card);
@@ -1503,13 +1506,14 @@
   async function saveProduct() {
     const name = document.getElementById('prodName').value.trim();
     const category = document.getElementById('prodCategory').value;
+    const styles = document.getElementById('prodStyles').value.trim() || '1';
     const desc = document.getElementById('prodDesc').value.trim();
     const btnLabel = document.getElementById('prodBtnLabel').value.trim() || 'BUY ON KAKOBUY';
     const link = document.getElementById('prodLink').value.trim();
     if (!name) { toast('Please enter a product name.'); return; }
     if (!link)  { toast('Please enter a button link.'); return; }
     const { error } = await sb.from('products').insert({
-      id: Date.now().toString(), name: name, category: category, desc: desc, btn_label: btnLabel, link: link, image: imageDataURL
+      id: Date.now().toString(), name: name, category: category, styles: styles, desc: desc, btn_label: btnLabel, link: link, image: imageDataURL
     });
     if (error) { console.error(error); toast('Could not save product.'); return; }
     await reload(document.getElementById('searchInput').value); closeModal(); toast('Product added!');
@@ -1539,7 +1543,7 @@
     document.getElementById('overlay').classList.add('open');
     imageDataURL = null;
     categoryAutoFilled = true;
-    ['imgFile','prodName','prodDesc','prodBtnLabel','prodLink','imgUrl','sourceLink'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    ['imgFile','prodName','prodDesc','prodBtnLabel','prodLink','imgUrl','sourceLink','prodStyles'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
     document.getElementById('prodCategory').value = '';
     document.getElementById('previewWrap').style.display = 'none';
     document.getElementById('converterStatus').textContent = '';
@@ -1557,6 +1561,7 @@
     document.getElementById('modal-save-btn').textContent = 'Save changes';
     document.getElementById('prodName').value = p.name || '';
     document.getElementById('prodCategory').value = p.category || '';
+    document.getElementById('prodStyles').value = (p.styles && p.styles !== '1') ? p.styles : '';
     document.getElementById('prodDesc').value = p.desc || '';
     document.getElementById('prodBtnLabel').value = p.btnLabel || '';
     document.getElementById('prodLink').value = p.link || '';
@@ -1579,6 +1584,7 @@
     if (!isAdmin || !editingId) return;
     var name = document.getElementById('prodName').value.trim();
     var category = document.getElementById('prodCategory').value;
+    var styles = document.getElementById('prodStyles').value.trim() || '1';
     var desc = document.getElementById('prodDesc').value.trim();
     var btnLabel = document.getElementById('prodBtnLabel').value.trim() || 'BUY ON KAKOBUY';
     var link = document.getElementById('prodLink').value.trim();
@@ -1596,14 +1602,14 @@
     var { data: sessionData } = await sb.auth.getSession();
     if (!sessionData.session) { toast('Session expired, please log in again.'); return; }
     var { data: updData, error } = await sb.from('products')
-      .update({ name: name, category: category, desc: desc, btn_label: btnLabel, link: link, image: imgVal })
+      .update({ name: name, category: category, styles: styles, desc: desc, btn_label: btnLabel, link: link, image: imgVal })
       .eq('id', editingId)
       .select();
     if (error) { console.error('Update error:', error); toast('Error: ' + error.message); return; }
     if (!updData || updData.length === 0) {
       // RLS blocked or id mismatch — try string coercion
       var { data: updData2, error: err2 } = await sb.from('products')
-        .update({ name: name, category: category, desc: desc, btn_label: btnLabel, link: link, image: imgVal })
+        .update({ name: name, category: category, styles: styles, desc: desc, btn_label: btnLabel, link: link, image: imgVal })
         .eq('id', String(editingId))
         .select();
       if (err2 || !updData2 || updData2.length === 0) {
