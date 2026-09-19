@@ -257,7 +257,8 @@
   main { width: 100%; margin: 0; padding: 0; display: flex; gap: 0; align-items: flex-start; justify-content: center; }
   .content { flex: 1; min-width: 0; width: 100%; max-width: 1320px; }
   .section-title { font-family: var(--font-title); font-size: 22px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); border-bottom: none; padding: 30px 28px 6px; margin: 0; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-  .stats-line { padding: 0 28px; font-size: 12px; color: var(--ink-soft); font-family: var(--font-ui); }
+  .stats-line { padding: 4px 28px 2px; font-size: 14px; color: var(--ink-soft); font-family: var(--font-ui); }
+  .stats-line strong { font-size: 19px; font-weight: 800; color: var(--ink); font-family: var(--font-title); }
   .cat-pill-label { pointer-events: none; }
   #countLabel { font-family: var(--font-ui); font-size: 13px; color: var(--ink-soft); font-weight: 500; }
 
@@ -1190,14 +1191,12 @@
       const label = btn.querySelector('.cat-pill-label');
       if (label) label.textContent = (cat || 'All finds') + (cachedProducts.length ? ' · ' + count : '');
     });
-    const statsEl = document.getElementById('statsLine');
-    if (statsEl) {
-      if (!cachedProducts.length) { statsEl.textContent = ''; }
-      else {
-        const usedCats = new Set(cachedProducts.map(function(p){ return p.category; }).filter(Boolean));
-        statsEl.textContent = cachedProducts.length + ' item' + (cachedProducts.length === 1 ? '' : 's') + (usedCats.size ? ' across ' + usedCats.size + ' categor' + (usedCats.size === 1 ? 'y' : 'ies') : '');
-      }
-    }
+  }
+
+  function parseStylesCount(str) {
+    if (!str) return 1;
+    var n = parseInt(String(str).replace(/[^0-9]/g, ''), 10);
+    return isNaN(n) || n < 1 ? 1 : n;
   }
 
   function dismissIntro() {
@@ -1352,7 +1351,14 @@
     var unpinned = filtered.filter(function(p){ return pinnedIds.indexOf(p.id) === -1; });
     filtered = pinned.concat(unpinned);
 
-    document.getElementById('countLabel').textContent = filtered.length ? '(' + filtered.length + ')' : '';
+    document.getElementById('countLabel').textContent = '';
+    var totalStyles = filtered.reduce(function(sum, p){ return sum + parseStylesCount(p.styles); }, 0);
+    var statsEl = document.getElementById('statsLine');
+    if (statsEl) {
+      statsEl.innerHTML = filtered.length
+        ? '<strong>' + totalStyles + '</strong> item' + (totalStyles === 1 ? '' : 's') + ', among <strong>' + filtered.length + '</strong> link' + (filtered.length === 1 ? '' : 's')
+        : '';
+    }
     grid.innerHTML = '';
 
     if (!productsLoaded && !q) {
